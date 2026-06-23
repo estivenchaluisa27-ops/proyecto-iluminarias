@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Modern Sign-in and Sign-up Form</title>
+    <!-- Link to external CSS for styling -->
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- Main container for form structure -->
+    <div class="form-structor">
+
+        <!-- Sign-up form section -->
+        <div class="signup">
+            <!-- Form title with optional separator -->
+            <h2 class="form-title" id="signup"><span>or</span>Sign up</h2>
+
+            <!-- Form-holder container for input fields -->
+            <div class="form-holder">
+                <!-- Input field for user's name -->
+                <input type="text" class="input" placeholder="Name" required />
+
+                <!-- Input field for user's email address -->
+                <input type="email" class="input" placeholder="Email" required />
+
+                <!-- Input field for user's password -->
+                <input type="password" class="input" placeholder="Password" required />
+            </div>
+
+            <!-- Submit button for sign-up form -->
+            <button class="submit-btn">Sign up</button>
+        </div>
+
+        <!-- Login form section with "slide-up" animation -->
+        <div class="login slide-up">
+            <div class="center">
+                <!-- Form title with optional separator -->
+                <h2 class="form-title" id="login"><span>or</span>Log in</h2>
+
+                <!-- Form-holder container for input fields -->
+                <div class="form-holder">
+                    <!-- Input field for user's email address -->
+                    <input type="email" class="input" placeholder="Email" required />
+
+                    <!-- Input field for user's password -->
+                    <input type="password" class="input" placeholder="Password" required />
+                </div>
+
+                <!-- Submit button for login form -->
+                <button class="submit-btn">Log in</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Link to external JavaScript file for form behavior -->
+    <script src="script.js"></script>'
+</body>
+</html>

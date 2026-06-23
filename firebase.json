@@ -1,12 +1,15 @@
 {
   "hosting": {
-    "public": ".",
+    "public": "frontend/dist",
     "ignore": [
       "firebase.json",
-      "**/.*",
-      "Maps/mapeo_luminarias.py",
-      "Maps/mediciones.xlsx",
-      "README.md"
+      "**/.*"
+    ],
+    "rewrites": [
+      {
+        "source": "**",
+        "destination": "/index.html"
+      }
     ]
   }
 }
