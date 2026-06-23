@@ -2,14 +2,14 @@
  * Script para importar luminarias.json a Firestore
  * Uso: node scripts/import-to-firestore.mjs
  *
- * Requiere tener configurado el archivo backend/.env con:
- * GOOGLE_APPLICATION_CREDENTIALS=ruta/a/serviceAccountKey.json
- * o FIREBASE_PROJECT_ID=iluminariasuce
+ * Requiere el archivo backend/.env con:
+ *   FIREBASE_PROJECT_ID
+ *   FIREBASE_CLIENT_EMAIL
+ *   FIREBASE_PRIVATE_KEY
  */
 import { readFileSync } from 'fs';
 import { initializeApp, cert } from 'firebase-admin/app';
 import { getFirestore } from 'firebase-admin/firestore';
-import { createRequire } from 'module';
 import { fileURLToPath } from 'url';
 import path from 'path';
 import dotenv from 'dotenv';
@@ -18,8 +18,11 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 dotenv.config({ path: path.resolve(__dirname, '../backend/.env') });
 
 initializeApp({
-  credential: cert(JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT_JSON)),
-  projectId: process.env.FIREBASE_PROJECT_ID || 'iluminariasuce',
+  credential: cert({
+    projectId: process.env.FIREBASE_PROJECT_ID,
+    clientEmail: process.env.FIREBASE_CLIENT_EMAIL,
+    privateKey: process.env.FIREBASE_PRIVATE_KEY.replace(/\\n/g, '\n'),
+  }),
 });
 
 const db = getFirestore();
