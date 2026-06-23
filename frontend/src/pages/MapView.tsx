@@ -9,6 +9,7 @@ import {
   FeatureGroup,
 } from 'react-leaflet';
 import L from 'leaflet';
+import { PanelRightClose, PanelRightOpen, Map } from 'lucide-react';
 import { luminariasService } from '../services/luminarias.service';
 import type { Luminaria } from '../types/luminaria';
 import HeatmapLayer from '../components/mapa/HeatmapLayer';
@@ -150,6 +151,8 @@ export default function MapView() {
   const [luminarias, setLuminarias] = useState<Luminaria[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const [selectedLuminaria, setSelectedLuminaria] = useState<Luminaria | null>(null);
+  const [panelOpen, setPanelOpen] = useState(false);
 
   const retry = () => {
     setError('');
@@ -171,13 +174,7 @@ export default function MapView() {
 
   if (loading) {
     return (
-      <div
-        style={{
-          textAlign: 'center',
-          padding: '2rem',
-          color: '#94a3b8',
-        }}
-      >
+      <div className="map-wrapper" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--text-secondary)', fontFamily: 'var(--font-mono)', fontSize: '0.8125rem' }}>
         Cargando mapa...
       </div>
     );
@@ -185,11 +182,9 @@ export default function MapView() {
 
   if (error) {
     return (
-      <div
-        style={{ textAlign: 'center', padding: '2rem', color: '#ef4444' }}
-      >
-        <p style={{ marginBottom: '1rem' }}>Error al cargar el mapa: {error}</p>
-        <button onClick={retry} className="btn-primary">
+      <div className="map-wrapper" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '1rem', color: 'var(--danger)' }}>
+        <p>Error al cargar el mapa: {error}</p>
+        <button onClick={retry} className="btn btn-primary">
           Reintentar
         </button>
       </div>
@@ -228,6 +223,11 @@ export default function MapView() {
     .filter((l) => l.luxes !== null && l.luxes > 0)
     .map((l) => [l.latitude, l.longitude, l.luxes! * 0.5]);
 
+  const handleMarkerClick = (l: Luminaria) => {
+    setSelectedLuminaria(l);
+    setPanelOpen(true);
+  };
+
   const renderMarker = (l: Luminaria) => {
     const configEstado = obtenerConfigEstado(l.estado);
     const color = configEstado.color;
@@ -261,6 +261,9 @@ export default function MapView() {
         key={l.id}
         position={[l.latitude, l.longitude]}
         icon={createIcon(color, configTipo.icon, '#ffffff')}
+        eventHandlers={{
+          click: () => handleMarkerClick(l),
+        }}
       >
         <Tooltip sticky>{tooltipText}</Tooltip>
         <Popup>
@@ -271,74 +274,167 @@ export default function MapView() {
   };
 
   return (
-    <div
-      style={{
-        height: 'calc(100vh - 120px)',
-        width: '100%',
-        borderRadius: 12,
-        overflow: 'hidden',
-      }}
-    >
-      <MapContainer
-        center={center}
-        zoom={17}
-        style={{ height: '100%', width: '100%' }}
-        zoomControl={true}
+    <div className="map-wrapper">
+      <div className="map-container-full">
+        <MapContainer
+          center={center}
+          zoom={17}
+          style={{ height: '100%', width: '100%' }}
+          zoomControl={true}
+        >
+          <LayersControl position="topright" collapsed={false}>
+            <BaseLayer checked name=" Calles">
+              <TileLayer
+                attribution='&copy; <a href="https://openstreetmap.org">OpenStreetMap</a>'
+                url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+              />
+            </BaseLayer>
+            <BaseLayer name=" Claro">
+              <TileLayer
+                attribution='&copy; <a href="https://carto.com/">CARTO</a>'
+                url="https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png"
+              />
+            </BaseLayer>
+            <BaseLayer name=" Oscuro">
+              <TileLayer
+                attribution='&copy; <a href="https://carto.com/">CARTO</a>'
+                url="https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png"
+              />
+            </BaseLayer>
+            <BaseLayer name=" Satelital">
+              <TileLayer
+                attribution="Esri"
+                url="https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}"
+                maxZoom={20}
+                maxNativeZoom={17}
+              />
+            </BaseLayer>
+
+            <Overlay checked name=" Luminarias LED">
+              <FeatureGroup>
+                {fgLed.markers.map(renderMarker)}
+              </FeatureGroup>
+            </Overlay>
+            <Overlay checked name=" Luminarias Sodio">
+              <FeatureGroup>
+                {fgSodio.markers.map(renderMarker)}
+              </FeatureGroup>
+            </Overlay>
+            <Overlay checked name=" Otros tipos">
+              <FeatureGroup>
+                {fgOtros.markers.map(renderMarker)}
+              </FeatureGroup>
+            </Overlay>
+            <Overlay name=" Mapa de Calor">
+              {heatmapData.length > 0 && (
+                <HeatmapLayer latlngs={heatmapData} />
+              )}
+            </Overlay>
+          </LayersControl>
+
+          <FullscreenControl />
+          <MiniMapControl />
+          <SearchControl luminarias={luminarias} />
+        </MapContainer>
+      </div>
+
+      <button
+        className={`btn-icon map-panel-toggle ${panelOpen ? 'panel-open' : ''}`}
+        onClick={() => setPanelOpen(!panelOpen)}
+        title={panelOpen ? 'Cerrar panel' : 'Abrir panel'}
       >
-        <LayersControl position="topright" collapsed={false}>
-          <BaseLayer checked name=" Calles">
-            <TileLayer
-              attribution='&copy; <a href="https://openstreetmap.org">OpenStreetMap</a>'
-              url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-            />
-          </BaseLayer>
-          <BaseLayer name=" Claro">
-            <TileLayer
-              attribution='&copy; <a href="https://carto.com/">CARTO</a>'
-              url="https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png"
-            />
-          </BaseLayer>
-          <BaseLayer name=" Oscuro">
-            <TileLayer
-              attribution='&copy; <a href="https://carto.com/">CARTO</a>'
-              url="https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png"
-            />
-          </BaseLayer>
-          <BaseLayer name=" Satelital">
-            <TileLayer
-              attribution="Esri"
-              url="https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}"
-              maxZoom={20}
-              maxNativeZoom={17}
-            />
-          </BaseLayer>
+        {panelOpen ? <PanelRightClose size={18} /> : <PanelRightOpen size={18} />}
+      </button>
 
-          <Overlay checked name=" Luminarias LED">
-            <FeatureGroup>
-              {fgLed.markers.map(renderMarker)}
-            </FeatureGroup>
-          </Overlay>
-          <Overlay checked name=" Luminarias Sodio">
-            <FeatureGroup>
-              {fgSodio.markers.map(renderMarker)}
-            </FeatureGroup>
-          </Overlay>
-          <Overlay checked name=" Otros tipos">
-            <FeatureGroup>
-              {fgOtros.markers.map(renderMarker)}
-            </FeatureGroup>
-          </Overlay>
-          <Overlay name=" Mapa de Calor">
-            {heatmapData.length > 0 && (
-              <HeatmapLayer latlngs={heatmapData} />
-            )}
-          </Overlay>
-        </LayersControl>
+      <div className={`detail-panel-overlay ${panelOpen ? '' : 'closed'}`}>
+        <div className="detail-panel-header">
+          <div className="detail-panel-title">
+            {selectedLuminaria ? `Luminaria #${selectedLuminaria.id}` : 'Detalles'}
+          </div>
+          <button className="btn-icon" onClick={() => setPanelOpen(false)}>
+            <PanelRightClose size={16} />
+          </button>
+        </div>
+        <div className="detail-panel-body">
+          {selectedLuminaria ? (
+            <>
+              <table className="data-table">
+                <tbody>
+                  <tr>
+                    <th>ID</th>
+                    <td>{selectedLuminaria.id}</td>
+                  </tr>
+                  <tr>
+                    <th>Sector</th>
+                    <td>{safeStr(selectedLuminaria.facultad)}</td>
+                  </tr>
+                  <tr>
+                    <th>Tipo</th>
+                    <td>{safeStr(selectedLuminaria.tipo).toUpperCase()}</td>
+                  </tr>
+                  <tr>
+                    <th>Altura Poste</th>
+                    <td>{selectedLuminaria.altura_poste ?? 'N/A'} m</td>
+                  </tr>
+                  <tr>
+                    <th>Estado</th>
+                    <td>
+                      <span className={`badge ${selectedLuminaria.estado?.toLowerCase() === 'enciende' ? 'badge-success' : selectedLuminaria.estado?.toLowerCase() === 'no enciende' ? 'badge-danger' : 'badge-warning'}`}>
+                        {selectedLuminaria.estado}
+                      </span>
+                    </td>
+                  </tr>
+                  <tr>
+                    <th>Luxes</th>
+                    <td>{selectedLuminaria.luxes !== null ? `${selectedLuminaria.luxes} lx` : 'Sin medición'}</td>
+                  </tr>
+                  <tr>
+                    <th>Edificio</th>
+                    <td>{safeStr(selectedLuminaria.edificio)}</td>
+                  </tr>
+                  <tr>
+                    <th>Latitud</th>
+                    <td>{selectedLuminaria.latitude.toFixed(6)}</td>
+                  </tr>
+                  <tr>
+                    <th>Longitud</th>
+                    <td>{selectedLuminaria.longitude.toFixed(6)}</td>
+                  </tr>
+                  <tr>
+                    <th>Altitud</th>
+                    <td>{selectedLuminaria.altitude !== null ? `${selectedLuminaria.altitude.toFixed(1)} msnm` : 'N/A'}</td>
+                  </tr>
+                </tbody>
+              </table>
 
-        <FullscreenControl />
-        <MiniMapControl />
-        <SearchControl luminarias={luminarias} />
-      </MapContainer>
+              <hr className="section-divider" />
+
+              <div style={{ fontSize: '0.75rem', fontWeight: 600, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.04em', marginBottom: '0.75rem' }}>
+                Fotografía
+              </div>
+              {selectedLuminaria.foto_url ? (
+                <img
+                  src={selectedLuminaria.foto_url}
+                  alt={`Luminaria #${selectedLuminaria.id}`}
+                  className="detail-photo"
+                  onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }}
+                />
+              ) : (
+                <div style={{ color: 'var(--text-muted)', fontSize: '0.8125rem', fontStyle: 'italic' }}>
+                  Sin fotografía disponible
+                </div>
+              )}
+            </>
+          ) : (
+            <div className="detail-empty">
+              <div className="detail-empty-icon">
+                <Map size={20} />
+              </div>
+              <div>Selecciona una luminaria en el mapa para ver sus detalles.</div>
+            </div>
+          )}
+        </div>
+      </div>
     </div>
   );
 }
