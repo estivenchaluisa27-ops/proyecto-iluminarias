@@ -1,5 +1,5 @@
 export interface Luminaria {
-  id: number;
+  id: string;
   facultad: string;
   latitude: number;
   longitude: number;

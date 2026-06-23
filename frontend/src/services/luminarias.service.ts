@@ -15,13 +15,13 @@ const COL = 'luminarias';
 export const luminariasService = {
   async getAll(): Promise<Luminaria[]> {
     const snap = await getDocs(collection(db, COL));
-    return snap.docs.map((d) => ({ ...d.data(), id: d.id } as unknown as Luminaria));
+    return snap.docs.map((d) => ({ ...d.data(), id: d.id } as Luminaria));
   },
 
   async getById(id: string): Promise<Luminaria> {
     const snap = await getDoc(doc(db, COL, id));
     if (!snap.exists()) throw new Error('Luminaria no encontrada');
-    return { ...snap.data(), id: snap.id } as unknown as Luminaria;
+    return { ...snap.data(), id: snap.id } as Luminaria;
   },
 
   async getStats(): Promise<LuminariaStats> {
@@ -59,17 +59,17 @@ export const luminariasService = {
 
   async create(data: Partial<Luminaria>): Promise<Luminaria> {
     const ref = await addDoc(collection(db, COL), data);
-    return { ...data, id: ref.id } as unknown as Luminaria;
+    return { ...data, id: ref.id } as Luminaria;
   },
 
   async update(id: string, data: Partial<Luminaria>): Promise<Luminaria> {
-    const ref = doc(db, COL, String(id));
+    const ref = doc(db, COL, id);
     await updateDoc(ref, data as Record<string, unknown>);
-    return { ...data, id } as unknown as Luminaria;
+    return { ...data, id } as Luminaria;
   },
 
   async remove(id: string): Promise<{ message: string }> {
-    await deleteDoc(doc(db, COL, String(id)));
+    await deleteDoc(doc(db, COL, id));
     return { message: 'Luminaria eliminada' };
   },
 };
