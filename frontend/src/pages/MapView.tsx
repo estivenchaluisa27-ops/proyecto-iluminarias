@@ -6,6 +6,7 @@ import {
   Popup,
   Tooltip,
   LayersControl,
+  FeatureGroup,
 } from 'react-leaflet';
 import L from 'leaflet';
 import { luminariasService } from '../services/luminarias.service';
@@ -14,7 +15,6 @@ import HeatmapLayer from '../components/mapa/HeatmapLayer';
 import FullscreenControl from '../components/mapa/FullscreenControl';
 import MiniMapControl from '../components/mapa/MiniMapControl';
 import SearchControl from '../components/mapa/SearchControl';
-import MapLegend from '../components/mapa/MapLegend';
 import 'leaflet/dist/leaflet.css';
 
 const { BaseLayer, Overlay } = LayersControl;
@@ -314,13 +314,19 @@ export default function MapView() {
           </BaseLayer>
 
           <Overlay checked name=" Luminarias LED">
-            {fgLed.markers.map(renderMarker)}
+            <FeatureGroup>
+              {fgLed.markers.map(renderMarker)}
+            </FeatureGroup>
           </Overlay>
           <Overlay checked name=" Luminarias Sodio">
-            {fgSodio.markers.map(renderMarker)}
+            <FeatureGroup>
+              {fgSodio.markers.map(renderMarker)}
+            </FeatureGroup>
           </Overlay>
           <Overlay checked name=" Otros tipos">
-            {fgOtros.markers.map(renderMarker)}
+            <FeatureGroup>
+              {fgOtros.markers.map(renderMarker)}
+            </FeatureGroup>
           </Overlay>
           <Overlay name=" Mapa de Calor">
             {heatmapData.length > 0 && (
@@ -332,7 +338,6 @@ export default function MapView() {
         <FullscreenControl />
         <MiniMapControl />
         <SearchControl luminarias={luminarias} />
-        <MapLegend />
       </MapContainer>
     </div>
   );
