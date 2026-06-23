@@ -29,13 +29,30 @@ function createIcon(color: string) {
 export default function MapView() {
   const [luminarias, setLuminarias] = useState<Luminaria[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
 
-  useEffect(() => {
-    luminariasService.getAll().then(setLuminarias).catch(console.error).finally(() => setLoading(false));
-  }, []);
+  const load = () => {
+    setLoading(true);
+    setError('');
+    luminariasService.getAll()
+      .then(setLuminarias)
+      .catch((e) => setError((e as Error).message))
+      .finally(() => setLoading(false));
+  };
+
+  useEffect(() => { load(); }, []);
 
   if (loading) {
     return <div style={{ textAlign: 'center', padding: '2rem', color: '#94a3b8' }}>Cargando mapa...</div>;
+  }
+
+  if (error) {
+    return (
+      <div style={{ textAlign: 'center', padding: '2rem', color: '#ef4444' }}>
+        <p style={{ marginBottom: '1rem' }}>Error al cargar el mapa: {error}</p>
+        <button onClick={load} className="btn-primary">Reintentar</button>
+      </div>
+    );
   }
 
   if (luminarias.length === 0) return null;
