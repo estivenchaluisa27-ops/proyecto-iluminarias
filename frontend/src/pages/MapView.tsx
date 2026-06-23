@@ -31,16 +31,21 @@ export default function MapView() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
 
-  const load = () => {
-    setLoading(true);
+  const retry = () => {
     setError('');
+    setLoading(true);
     luminariasService.getAll()
       .then(setLuminarias)
       .catch((e) => setError((e as Error).message))
       .finally(() => setLoading(false));
   };
 
-  useEffect(() => { load(); }, []);
+  useEffect(() => {
+    luminariasService.getAll()
+      .then(setLuminarias)
+      .catch((e) => setError((e as Error).message))
+      .finally(() => setLoading(false));
+  }, []);
 
   if (loading) {
     return <div style={{ textAlign: 'center', padding: '2rem', color: '#94a3b8' }}>Cargando mapa...</div>;
@@ -50,7 +55,7 @@ export default function MapView() {
     return (
       <div style={{ textAlign: 'center', padding: '2rem', color: '#ef4444' }}>
         <p style={{ marginBottom: '1rem' }}>Error al cargar el mapa: {error}</p>
-        <button onClick={load} className="btn-primary">Reintentar</button>
+        <button onClick={retry} className="btn-primary">Reintentar</button>
       </div>
     );
   }
