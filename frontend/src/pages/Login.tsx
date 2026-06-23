@@ -119,7 +119,7 @@ export default function Login() {
           {/* LOGIN SECTION */}
           <div className={`login ${isSignUp ? 'slide-up' : ''}`}>
             <div className="center">
-              <h2 class="form-title" id="login" onClick={() => setIsSignUp(false)}>
+              <h2 className="form-title" id="login" onClick={() => setIsSignUp(false)}>
                 <span>o</span>Iniciar sesión
               </h2>
 
