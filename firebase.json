@@ -1,0 +1,12 @@
+{
+  "hosting": {
+    "public": ".",
+    "ignore": [
+      "firebase.json",
+      "**/.*",
+      "Maps/mapeo_luminarias.py",
+      "Maps/mediciones.xlsx",
+      "README.md"
+    ]
+  }
+}
