@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Routes, Route, Link, useLocation, useNavigate } from 'react-router-dom';
-import { LayoutDashboard, Map, Users, Settings, LogOut, Lightbulb, Zap, Activity, Thermometer, Menu } from 'lucide-react';
+import { LayoutDashboard, Map, Users, Settings, LogOut, Lightbulb, Zap, Activity, Thermometer, Menu, LightbulbOff } from 'lucide-react';
 import { useAuth } from '../hooks/useAuth';
 import { luminariasService } from '../services/luminarias.service';
 import type { LuminariaStats, Luminaria } from '../types/luminaria';
@@ -50,10 +50,12 @@ function DashboardHome() {
         </div>
         <div className="stat-card">
           <div className="stat-card-header">
-            <Activity size={14} />
-            Dañadas
+            <LightbulbOff size={14} />
+            No funcionan
           </div>
-          <div className="stat-card-value warning">{stats?.porEstado?.['dañado/parpadea'] ?? '...'}</div>
+          <div className="stat-card-value warning">
+            {stats ? ((stats.porEstado?.['no enciende'] ?? 0) + (stats.porEstado?.['dañado/parpadea'] ?? 0) + (stats.porEstado?.['desconocido'] ?? 0)) : '...'}
+          </div>
         </div>
         <div className="stat-card">
           <div className="stat-card-header">
