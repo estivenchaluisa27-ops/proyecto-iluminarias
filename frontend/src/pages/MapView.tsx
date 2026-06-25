@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import {
   MapContainer,
   TileLayer,
@@ -13,7 +13,7 @@ import L from 'leaflet';
 import { luminariasService } from '../services/luminarias.service';
 import type { Luminaria } from '../types/luminaria';
 import type { PredictionLuminaria } from '../types/luminaria';
-// import HeatmapLayer from '../components/mapa/HeatmapLayer';
+import HeatmapLayer from '../components/mapa/HeatmapLayer';
 import SearchControl from '../components/mapa/SearchControl';
 import FacultyFilter from '../components/mapa/FacultyFilter';
 import PredictionToggle from '../components/mapa/PredictionToggle';
@@ -61,9 +61,27 @@ function obtenerConfigTipo(tipo: string) {
   );
 }
 
-function MapResizer() {
+function MapResizer({ onToggleHeatmap }: { onToggleHeatmap?: (show: boolean) => void }) {
   const map = useMap();
-  useEffect(() => { map.invalidateSize(); }, [map]);
+  const cbRef = useRef(onToggleHeatmap);
+  cbRef.current = onToggleHeatmap;
+
+  useEffect(() => {
+    map.invalidateSize();
+    const handleAdd = (e: Record<string, unknown>) => {
+      if (e.name === ' Mapa de Calor') cbRef.current?.(true);
+    };
+    const handleRemove = (e: Record<string, unknown>) => {
+      if (e.name === ' Mapa de Calor') cbRef.current?.(false);
+    };
+    map.on('overlayadd', handleAdd);
+    map.on('overlayremove', handleRemove);
+    return () => {
+      map.off('overlayadd', handleAdd);
+      map.off('overlayremove', handleRemove);
+    };
+  }, [map]);
+
   return null;
 }
 
@@ -89,6 +107,7 @@ export default function MapView() {
   const [error, setError] = useState('');
   const [selectedFacultad, setSelectedFacultad] = useState(FACULTADES[0]);
   const [predictionMode, setPredictionMode] = useState<'actual' | 'prediccion'>('actual');
+  const [showHeatmap, setShowHeatmap] = useState(false);
 
   const filteredLuminarias = selectedFacultad === FACULTADES[0]
     ? luminarias
@@ -166,9 +185,9 @@ export default function MapView() {
     show: true,
   };
 
-  // const heatmapData: Array<[number, number, number]> = displayLuminarias
-  //   .filter((l) => l.luxes !== null && l.luxes > 0)
-  //   .map((l) => [l.latitude, l.longitude, l.luxes! * 0.5]);
+  const heatmapData: Array<[number, number, number]> = displayLuminarias
+    .filter((l) => l.luxes !== null && l.luxes > 0)
+    .map((l) => [l.latitude, l.longitude, l.luxes * 0.5]);
 
   const renderMarker = (l: Luminaria) => {
     const configEstado = obtenerConfigEstado(l.estado);
@@ -294,14 +313,14 @@ export default function MapView() {
                 </FeatureGroup>
               </Overlay>
             )}
-            {/* <Overlay name=" Mapa de Calor">
-              {heatmapData.length > 0 && (
-                <HeatmapLayer latlngs={heatmapData} />
-              )}
-            </Overlay> */}
+            <Overlay name=" Mapa de Calor" />
+
+            {showHeatmap && heatmapData.length > 0 && (
+              <HeatmapLayer latlngs={heatmapData} />
+            )}
           </LayersControl>
 
-          <MapResizer />
+          <MapResizer onToggleHeatmap={setShowHeatmap} />
           <SearchControl luminarias={displayLuminarias} />
         </MapContainer>
 
