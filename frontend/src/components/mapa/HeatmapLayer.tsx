@@ -20,36 +20,36 @@ const HEATMAP_GRADIENT: Record<number, string> = {
   1.0: '#d73027',
 };
 
-// Monkey-patch para evitar crash cuando el canvas mide 0x0
-// Extender el tipo HeatLayer para incluir _canvas
-declare module 'leaflet' {
-  interface HeatLayer {
-    _canvas: HTMLCanvasElement | null;
-    __original_redraw: () => void;
-  }
+// =========================================================================
+// PATCH GLOBAL PARA leaflet.heat — evitar crash cuando el canvas mide 0x0
+// =========================================================================
+// @ts-ignore — evitar errores de TypeScript por propiedades no tipadas
+if (!L.HeatLayer.prototype.hasOwnProperty('__patched')) {
+  // Guardar el original
+  // @ts-ignore
+  const originalRedraw = L.HeatLayer.prototype._redraw;
+
+  // Aplicar el patch
+  // @ts-ignore
+  L.HeatLayer.prototype._redraw = function _redraw() {
+    // Type assertion para acceder a _canvas y _map
+    const self = this as any;
+    // Si el mapa no está listo o el canvas no tiene dimensiones, retornar temprano
+    if (!self._map || !self._canvas || self._canvas.width === 0 || self._canvas.height === 0) {
+      return;
+    }
+    // @ts-ignore
+    return originalRedraw.call(self);
+  };
+
+  // Marcar como parcheado para evitar re-aplicación
+  // @ts-ignore
+  L.HeatLayer.prototype.__patched = true;
 }
 
-// Guardar el original
-// @ts-ignore
-const originalRedraw = L.HeatLayer.prototype._redraw;
-
-// Aplicar el patch
-// @ts-ignore
-L.HeatLayer.prototype._redraw = function _redraw() {
-  if (!this._canvas || this._canvas.width === 0 || this._canvas.height === 0) {
-    return;
-  }
-  // @ts-ignore
-  return originalRedraw.call(this);
-};
-
-// Restaurar el original cuando el componente se desmonte
-// Esto evita que el patch persista en otros mapas
-const cleanupPatch = () => {
-  // @ts-ignore
-  L.HeatLayer.prototype._redraw = originalRedraw;
-};
-
+// =========================================================================
+// COMPONENTE HEATMAPLAYER
+// =========================================================================
 export default function HeatmapLayer({
   latlngs,
   radius = 30,
@@ -78,14 +78,10 @@ export default function HeatmapLayer({
 
       return () => {
         map.removeLayer(heat);
-        cleanupPatch();
       };
     };
 
     map.whenReady(readyHandler);
-    return () => {
-      cleanupPatch();
-    };
   }, [map, latlngs, radius, blur, maxZoom, gradient]);
 
   return null;
