@@ -20,6 +20,7 @@ import SearchControl from '../components/mapa/SearchControl';
 import FacultyFilter from '../components/mapa/FacultyFilter';
 import PredictionToggle from '../components/mapa/PredictionToggle';
 import PredictionStats from '../components/mapa/PredictionStats';
+import { ActualPopup, PredictionPopup } from '../components/mapa/LuminariaPopup';
 import { usePrediction } from '../hooks/usePrediction';
 import { FACULTADES } from '../types/luminaria';
 import 'leaflet/dist/leaflet.css';
@@ -76,81 +77,6 @@ function createIcon(color: string, faClass: string, iconColor: string) {
     iconSize: [28, 28],
     iconAnchor: [14, 14],
   });
-}
-
-function generarPopupHTML(
-  id: string,
-  sector: string,
-  tipo: string,
-  altura: string,
-  luxes: string,
-  estadoFoco: string,
-  colorEstado: string,
-  lat: number,
-  lon: number,
-  alt: number | null,
-  urlFoto: string
-) {
-  const altDisplay = alt !== null && alt !== undefined ? `${alt.toFixed(1)} msnm` : 'N/A';
-
-  return `
-    <style>
-      .leaflet-popup-content-wrapper {
-        background: rgba(15, 23, 42, 0.85) !important;
-        backdrop-filter: blur(4px) !important;
-        color: #f8fafc !important;
-        border-radius: 6px !important;
-        box-shadow: 0 4px 15px rgba(0,0,0,0.5) !important;
-      }
-      .leaflet-popup-tip {
-        background: rgba(15, 23, 42, 0.85) !important;
-      }
-      .leaflet-popup-content {
-        margin: 0 !important;
-      }
-    </style>
-    <div style="font-family:'Segoe UI',Arial,sans-serif;min-width:280px;font-size:15px;padding:16px;color:#cbd5e1;">
-      <h4 style="margin:0 0 12px 0;font-size:17px;color:#ffffff;font-weight:600;border-bottom:1px solid #334155;padding-bottom:8px;">
-        Luminaria #${id}
-        <div style="font-size:13px;font-weight:400;color:#94a3b8;margin-top:4px;">
-          ${safeStr(sector).charAt(0).toUpperCase() + safeStr(sector).slice(1)}
-        </div>
-      </h4>
-      <table style="width:100%;border-collapse:collapse;margin-bottom:12px;">
-        <tr>
-          <td style="color:#94a3b8;padding:6px 0;width:45%;">Tipo:</td>
-          <td style="font-weight:500;color:#ffffff;padding:6px 0;">${safeStr(tipo).toUpperCase()}</td>
-        </tr>
-        <tr>
-          <td style="color:#94a3b8;padding:6px 0;">Altura Poste:</td>
-          <td style="font-weight:500;color:#ffffff;padding:6px 0;">${safeStr(altura)} m</td>
-        </tr>
-        <tr>
-          <td style="color:#94a3b8;padding:6px 0;">Medición Luxes:</td>
-          <td style="font-weight:500;color:#ffffff;padding:6px 0;">${luxes}</td>
-        </tr>
-        <tr>
-          <td style="color:#94a3b8;padding:6px 0;">Estado:</td>
-          <td style="font-weight:500;color:#ffffff;padding:6px 0;">
-            <span style="background-color:${colorEstado};color:white;padding:2px 8px;border-radius:10px;font-size:11px;font-weight:bold;text-transform:uppercase;">
-              ${safeStr(estadoFoco).toUpperCase()}
-            </span>
-          </td>
-        </tr>
-      </table>
-      <div style="font-size:15px;color:#64748b;border-top:1px solid #334155;padding-top:15px;margin-bottom:16px;line-height:1.6;">
-        Lat: ${lat.toFixed(6)}<br>
-        Lon: ${lon.toFixed(6)}<br>
-        Alt: ${altDisplay}
-      </div>
-      <a href="${safeStr(urlFoto, '#')}" target="_blank"
-         style="display:block;text-align:center;border:1px solid #475569;background:rgba(255,255,255,0.05);
-                color:#ffffff;text-decoration:none;padding:8px;border-radius:4px;
-                font-weight:500;font-size:14px;">
-        Ver Foto
-      </a>
-    </div>
-  `;
 }
 
 export default function MapView() {
@@ -250,27 +176,6 @@ export default function MapView() {
     const configEstado = obtenerConfigEstado(l.estado);
     const color = configEstado.color;
     const configTipo = obtenerConfigTipo(l.tipo);
-    const luxDisplay =
-      l.luxes !== null && l.luxes !== undefined
-        ? `${l.luxes} lx`
-        : 'Sin medición';
-    const altura = l.altura_poste
-      ? String(l.altura_poste)
-      : 'N/A';
-
-    const popupHTML = generarPopupHTML(
-      String(l.id),
-      l.facultad,
-      l.tipo,
-      altura,
-      luxDisplay,
-      l.estado,
-      color,
-      l.latitude,
-      l.longitude,
-      l.altitude,
-      l.foto_url
-    );
 
     const tooltipText = `${configTipo.label} | ${safeStr(l.estado).charAt(0).toUpperCase() + safeStr(l.estado).slice(1)} | ${l.facultad}`;
 
@@ -285,7 +190,7 @@ export default function MapView() {
       >
         <Tooltip sticky>{tooltipText}</Tooltip>
         <Popup>
-          <div dangerouslySetInnerHTML={{ __html: popupHTML }} />
+          <ActualPopup l={l} colorEstado={color} />
         </Popup>
       </Marker>
     );
@@ -307,69 +212,6 @@ export default function MapView() {
 
   const renderPredictionMarker = (l: PredictionLuminaria) => {
     const luxDisplay = l.luxes !== null ? `${l.luxes} lx` : 'Sin medición';
-    const origTipo = l.tipoOriginal?.toUpperCase() || 'N/A';
-    const origEstado = l.estadoOriginal || 'N/A';
-    const origLux = l.luxesOriginal !== null ? `${l.luxesOriginal} lx` : 'N/A';
-
-    const popupHTML = `
-      <style>
-        .leaflet-popup-content-wrapper {
-          background: rgba(15, 23, 42, 0.85) !important;
-          backdrop-filter: blur(4px) !important;
-          color: #f8fafc !important;
-          border-radius: 6px !important;
-          box-shadow: 0 4px 15px rgba(0,0,0,0.5) !important;
-        }
-        .leaflet-popup-tip {
-          background: rgba(15, 23, 42, 0.85) !important;
-        }
-        .leaflet-popup-content {
-          margin: 0 !important;
-        }
-      </style>
-      <div style="font-family:'Segoe UI',Arial,sans-serif;min-width:280px;font-size:15px;padding:16px;color:#cbd5e1;">
-        <h4 style="margin:0 0 12px 0;font-size:17px;color:#ffffff;font-weight:600;border-bottom:1px solid #334155;padding-bottom:8px;">
-          Luminaria #${l.id}
-          <div style="font-size:13px;font-weight:400;color:#4ade80;margin-top:4px;">
-            Predicción LED
-          </div>
-        </h4>
-        <table style="width:100%;border-collapse:collapse;margin-bottom:12px;">
-          <tr>
-            <td style="color:#94a3b8;padding:6px 0;width:45%;">Tipo Pred.:</td>
-            <td style="font-weight:500;color:#ffffff;padding:6px 0;">LED</td>
-          </tr>
-          <tr>
-            <td style="color:#94a3b8;padding:6px 0;">Tipo Original:</td>
-            <td style="font-weight:500;color:#f97316;padding:6px 0;">${origTipo}</td>
-          </tr>
-          <tr>
-            <td style="color:#94a3b8;padding:6px 0;">Luxes Pred.:</td>
-            <td style="font-weight:500;color:#4ade80;padding:6px 0;">${luxDisplay}</td>
-          </tr>
-          <tr>
-            <td style="color:#94a3b8;padding:6px 0;">Luxes Original:</td>
-            <td style="font-weight:500;color:#94a3b8;padding:6px 0;">${origLux}</td>
-          </tr>
-          <tr>
-            <td style="color:#94a3b8;padding:6px 0;">Estado Pred.:</td>
-            <td style="font-weight:500;color:#ffffff;padding:6px 0;">
-              <span style="background-color:#22c55e;color:white;padding:2px 8px;border-radius:10px;font-size:11px;font-weight:bold;text-transform:uppercase;">
-                ENCIENDE
-              </span>
-            </td>
-          </tr>
-          <tr>
-            <td style="color:#94a3b8;padding:6px 0;">Estado Original:</td>
-            <td style="font-weight:500;color:#f87171;padding:6px 0;">${origEstado.toUpperCase()}</td>
-          </tr>
-        </table>
-        <div style="font-size:15px;color:#64748b;border-top:1px solid #334155;padding-top:15px;margin-bottom:16px;line-height:1.6;">
-          Lat: ${l.latitude.toFixed(6)}<br>
-          Lon: ${l.longitude.toFixed(6)}
-        </div>
-      </div>
-    `;
 
     return (
       <Marker
@@ -382,7 +224,7 @@ export default function MapView() {
       >
         <Tooltip sticky>LED Pred. | {luxDisplay} | {l.facultad}</Tooltip>
         <Popup>
-          <div dangerouslySetInnerHTML={{ __html: popupHTML }} />
+          <PredictionPopup l={l} />
         </Popup>
       </Marker>
     );

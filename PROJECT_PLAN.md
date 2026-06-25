@@ -11,8 +11,8 @@
 | Proyecto | Sistema de monitoreo y mapeo de luminarias del campus universitario |
 | Repositorio | `proyecto-iluminarias` |
 | Fecha análisis | 2026-06-25 |
-| **Fase actual** | **Fase 2 — Predicción LED (completada)** |
-| Estado actual | Filtro por facultad + predicción LED funcionales. Listo para Fase 3. |
+| **Fase actual** | **Fase 3 — Mejoras Técnicas (completada)** |
+| Estado actual | Filtro + predicción + mejoras técnicas. Listo para Fase 4. |
 
 ### Stack detectado
 
@@ -56,11 +56,11 @@
 | ~~Alta~~ | ~~No hay predicción LED~~ | ~~No se puede dimensionar modernización~~ | ✅ Fase 2: toggle + KPI + mapa simulado |
 | Media | Backend lee JSON, frontend usa Firestore | Inconsistencia de fuente de verdad | Mantener JSON para backend (decisión #1), documentar |
 | Media | `MapView.tsx` renderiza todos los markers directamente | Posible pérdida de performance si crece el dataset | Modularizar en subcomponentes, evaluar virtualización |
-| Media | Popups usan `dangerouslySetInnerHTML` | Riesgo de XSS si datos externos no son confiables | Fase 3: reemplazar popups por JSX puro |
-| Media | CSS monolítico (`index.css`, 752 líneas) | Difícil mantenimiento | Fase 3: separar por feature (`mapa.css`, `auth.css`, `dashboard.css`) |
+| ~~Media~~ | ~~Popups usan `dangerouslySetInnerHTML`~~ | ~~Riesgo de XSS~~ | ✅ Fase 3: JSX puro via `LuminariaPopup.tsx` |
+| ~~Media~~ | ~~CSS monolítico (`index.css`, 1058 líneas)~~ | ~~Difícil mantenimiento~~ | ✅ Fase 3: separado en 5 módulos CSS |
 | Baja | UsersPage y SettingsPage vacías | Usuarios ven "en desarrollo" | Fase 4: implementar o eliminar placeholders |
 | Baja | Sin tests configurados | Sin retroalimentación automática | Fase 4: Vitest en frontend; correr backend test |
-| Baja | Tipos `Luminaria` duplicados en frontend/backend | Posibles inconsistencias de tipos | Fase 3: centralizar interfaz o usar schema compartido |
+| ~~Baja~~ | ~~Tipos `Luminaria` duplicados en frontend/backend~~ | ~~Posibles inconsistencias~~ | ✅ Fase 3: `shared/luminaria.ts` tipo único |
 
 ---
 
@@ -144,16 +144,24 @@ function predict(luminaria) {
 - [x] Panel de	stats se oculta si se abre el panel de detalles (evita overlap).
 - [x] Popups de predicción muestran tipo/estado original vs predicho.
 
-### Fase 3 — Mejoras Técnicas
+### Fase 3 — Mejoras Técnicas ✅
 
-| # | Tarea | Archivos afectados |
-|---|-------|--------------------|
-| 3.1 | Modularizar CSS por feature | `frontend/src/styles/*.css` o similares |
-| 3.2 | Reemplazar `dangerouslySetInnerHTML` del popup por JSX puro | `frontend/src/pages/MapView.tsx` |
-| 3.3 | Agregar Error Boundary global | `frontend/src/App.tsx` |
-| 3.4 | Unificar/consolidar tipos Luminaria | `frontend/src/types/luminaria.ts` + `backend/src/controllers/luminarias.controller.ts` |
-| 3.5 | Agregar debounce al buscador del mapa | `frontend/src/components/mapa/SearchControl.tsx` |
-| 3.6 | Evaluar paginación virtualizada si el dataset crece | Decisión posterior |
+| # | Tarea | Archivos afectados | Estado |
+|---|-------|--------------------|--------|
+| 3.1 | Modularizar CSS por feature | `frontend/src/styles/{base,auth,dashboard,map,prediction}.css` + `index.css` como hub | ✅ |
+| 3.2 | Reemplazar `dangerouslySetInnerHTML` por JSX puro | `frontend/src/components/mapa/LuminariaPopup.tsx` (nuevo) + `MapView.tsx` | ✅ |
+| 3.3 | Agregar Error Boundary global | `frontend/src/components/ErrorBoundary.tsx` (nuevo) + `App.tsx` | ✅ |
+| 3.4 | Unificar tipos Luminaria frontend/backend | `shared/luminaria.ts` (nuevo) + `shared/constants.ts` (nuevo) | ✅ |
+| 3.5 | Debounce al buscador del mapa | `SearchControl.tsx` ya usa `delay: 300` via leaflet-search | ✅ (preexistente) |
+| 3.6 | Evaluar paginación virtualizada | Decisión posterior (dataset 373 → no necesario aún) | — |
+
+**Cambios clave:**
+- CSS dividido de 1 archivo monolítico (1058 líneas) → 5 módulos + hub de imports.
+- Popups de mapa eliminan `dangerouslySetInnerHTML`, usan componentes JSX (`ActualPopup`, `PredictionPopup`) con clases CSS.
+- Popup dark-theme globalizado via `.leaflet-popup-content-wrapper` en `map.css` (antes inline `<style>` por cada popup).
+- `ErrorBoundary` class component envuelve toda la app. Muestra mensaje con botón "Recargar página".
+- Tipo `Luminaria` centralizado en `shared/luminaria.ts`, re-exportado por frontend y backend.
+- Constantes (`FACULTADES`, `LED_AVG_LUX`, etc.) separadas en `shared/constants.ts` (compatibles con ESM del frontend y excluidas del backend).
 
 ### Fase 4 — Funcionalidad Pendiente
 
@@ -170,7 +178,7 @@ function predict(luminaria) {
 
 | ID | Descripción | Severidad | Fase de corrección | Estado |
 |----|-------------|-----------|--------------------|--------|
-| BUG-1 | `dangerouslySetInnerHTML` en popups del mapa | Media | Fase 3 | Abierto |
+| BUG-1 | ~~`dangerouslySetInnerHTML` en popups del mapa~~ | ~~Media~~ | ~~Fase 3~~ | ✅ Corregido — JSX puro |
 | BUG-2 | Backend responde con datos de JSON local mientras el frontend consume Firestore directamente | Media | Documentado (decisión #1) | Abierto |
 | BUG-3 | `DashboardHome` no maneja errores de `getAll` para incidencias | Baja | Fase 1/3 | Abierto |
 | BUG-4 | `SettingsPage` y `UsersPage` son placeholders sin funcionalidad | Baja | Fase 4 | Abierto |
@@ -181,6 +189,16 @@ function predict(luminaria) {
 ## 6. Registro de Cambios (Change Log)
 
 ### 2026-06-25
+- **Fase 3 completada:** Mejoras técnicas implementadas.
+  - CSS modularizado: `index.css` (hub) → `base.css`, `auth.css`, `dashboard.css`, `map.css`, `prediction.css`.
+  - Eliminado `dangerouslySetInnerHTML` en popups del mapa. Nuevo componente `LuminariaPopup.tsx` con `ActualPopup` y `PredictionPopup` en JSX puro.
+  - Popup dark-theme globalizado via CSS (eliminados `<style>` inline duplicados en cada popup).
+  - Error Boundary global añadido (`ErrorBoundary.tsx`) envolviendo toda la app en `App.tsx`.
+  - Tipos `Luminaria` unificados en `shared/luminaria.ts`. Frontend y backend importan de la misma fuente.
+  - Constantes (`FACULTADES`, `LED_AVG_LUX`, etc.) separadas en `shared/constants.ts`.
+  - Backend `tsconfig.json` actualizado: `rootDir: "../"` + `include: ["src", "../shared/luminaria.ts"]`.
+  - Frontend `tsconfig.app.json` actualizado: `include: ["src", "../shared"]`.
+  - BUG-1 cerrado: popups seguros sin `dangerouslySetInnerHTML`.
 - **Fase 2 completada:** Predicción LED implementada.
   - Nuevo hook `usePrediction.ts` con lógica de conversión sodio→LED.
   - Componentes `PredictionToggle.tsx` y `PredictionStats.tsx`.

@@ -1,30 +1,12 @@
 import type { Response } from 'express';
 import type { AuthRequest } from '../middleware/auth.js';
+import type { Luminaria } from '../../../shared/luminaria.js';
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const DATA_PATH = path.resolve(__dirname, '../../data/luminarias.json');
-
-interface Luminaria {
-  id: number;
-  facultad: string;
-  latitude: number;
-  longitude: number;
-  altitude: number | null;
-  precision: number | null;
-  tipo: string;
-  altura_poste: number | null;
-  luxes: number | null;
-  estado: string;
-  etiqueta: string | null;
-  edificio: string;
-  foto_url: string;
-  uuid: string;
-  grupo: number | null;
-  submitted_by: string;
-}
 
 function loadData(): Luminaria[] {
   const raw = fs.readFileSync(DATA_PATH, 'utf-8');
