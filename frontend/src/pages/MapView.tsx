@@ -7,6 +7,7 @@ import {
   Tooltip,
   LayersControl,
   FeatureGroup,
+  useMap,
 } from 'react-leaflet';
 import L from 'leaflet';
 import { luminariasService } from '../services/luminarias.service';
@@ -58,6 +59,12 @@ function obtenerConfigTipo(tipo: string) {
       color: '#94A3B8',
     }
   );
+}
+
+function MapResizer() {
+  const map = useMap();
+  useEffect(() => { map.invalidateSize(); }, [map]);
+  return null;
 }
 
 function createIcon(color: string, faClass: string, iconColor: string) {
@@ -294,6 +301,7 @@ export default function MapView() {
             </Overlay> */}
           </LayersControl>
 
+          <MapResizer />
           <SearchControl luminarias={displayLuminarias} />
         </MapContainer>
 
