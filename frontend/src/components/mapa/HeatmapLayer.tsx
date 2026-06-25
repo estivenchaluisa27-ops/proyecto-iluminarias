@@ -20,6 +20,36 @@ const HEATMAP_GRADIENT: Record<number, string> = {
   1.0: '#d73027',
 };
 
+// Monkey-patch para evitar crash cuando el canvas mide 0x0
+// Extender el tipo HeatLayer para incluir _canvas
+declare module 'leaflet' {
+  interface HeatLayer {
+    _canvas: HTMLCanvasElement | null;
+    __original_redraw: () => void;
+  }
+}
+
+// Guardar el original
+// @ts-ignore
+const originalRedraw = L.HeatLayer.prototype._redraw;
+
+// Aplicar el patch
+// @ts-ignore
+L.HeatLayer.prototype._redraw = function _redraw() {
+  if (!this._canvas || this._canvas.width === 0 || this._canvas.height === 0) {
+    return;
+  }
+  // @ts-ignore
+  return originalRedraw.call(this);
+};
+
+// Restaurar el original cuando el componente se desmonte
+// Esto evita que el patch persista en otros mapas
+const cleanupPatch = () => {
+  // @ts-ignore
+  L.HeatLayer.prototype._redraw = originalRedraw;
+};
+
 export default function HeatmapLayer({
   latlngs,
   radius = 30,
@@ -32,17 +62,29 @@ export default function HeatmapLayer({
   useEffect(() => {
     if (latlngs.length === 0) return;
 
-    const heat = L.heatLayer(latlngs, {
-      radius,
-      blur,
-      maxZoom,
-      gradient,
-      minOpacity: 0.4,
-    });
-    heat.addTo(map);
+    // Forzar recálculo de tamaño del mapa para evitar canvas 0x0
+    map.invalidateSize();
 
+    // Esperar a que el mapa esté listo (layout completo)
+    const readyHandler = () => {
+      const heat = L.heatLayer(latlngs, {
+        radius,
+        blur,
+        maxZoom,
+        gradient,
+        minOpacity: 0.4,
+      });
+      heat.addTo(map);
+
+      return () => {
+        map.removeLayer(heat);
+        cleanupPatch();
+      };
+    };
+
+    map.whenReady(readyHandler);
     return () => {
-      map.removeLayer(heat);
+      cleanupPatch();
     };
   }, [map, latlngs, radius, blur, maxZoom, gradient]);
 
