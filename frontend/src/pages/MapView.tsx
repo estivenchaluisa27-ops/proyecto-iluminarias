@@ -9,13 +9,10 @@ import {
   FeatureGroup,
 } from 'react-leaflet';
 import L from 'leaflet';
-import { PanelRightClose, PanelRightOpen, Map } from 'lucide-react';
 import { luminariasService } from '../services/luminarias.service';
 import type { Luminaria } from '../types/luminaria';
 import type { PredictionLuminaria } from '../types/luminaria';
 import HeatmapLayer from '../components/mapa/HeatmapLayer';
-import FullscreenControl from '../components/mapa/FullscreenControl';
-import MiniMapControl from '../components/mapa/MiniMapControl';
 import SearchControl from '../components/mapa/SearchControl';
 import FacultyFilter from '../components/mapa/FacultyFilter';
 import PredictionToggle from '../components/mapa/PredictionToggle';
@@ -31,14 +28,14 @@ const ESTADO_CONFIG: Record<
   string,
   { color: string; label: string }
 > = {
-  enciende: { color: '#22c55e', label: 'Funciona correctamente' },
-  'no enciende': { color: '#ef4444', label: 'No enciende' },
-  'dañado/parpadea': { color: '#f97316', label: 'Dañado o parpadea' },
+  enciende: { color: '#059669', label: 'Funciona correctamente' },
+  'no enciende': { color: '#DC2626', label: 'No enciende' },
+  'dañado/parpadea': { color: '#D97706', label: 'Dañado o parpadea' },
 };
 
 const TIPOS_CONFIG: Record<string, { icon: string; label: string; color: string }> = {
-  led: { icon: 'fa-bolt', label: 'LED', color: '#eab308' },
-  sodio: { icon: 'fa-lightbulb', label: 'Sodio', color: '#f97316' },
+  led: { icon: 'fa-bolt', label: 'LED', color: '#2563EB' },
+  sodio: { icon: 'fa-lightbulb', label: 'Sodio', color: '#D97706' },
 };
 
 function safeStr(val: unknown, fallback = 'No especificado'): string {
@@ -49,7 +46,7 @@ function safeStr(val: unknown, fallback = 'No especificado'): string {
 
 function obtenerConfigEstado(estado: string) {
   const key = safeStr(estado, 'desconocido').toLowerCase();
-  return ESTADO_CONFIG[key] ?? { color: '#6b7280', label: 'Estado desconocido' };
+  return ESTADO_CONFIG[key] ?? { color: '#94A3B8', label: 'Estado desconocido' };
 }
 
 function obtenerConfigTipo(tipo: string) {
@@ -58,7 +55,7 @@ function obtenerConfigTipo(tipo: string) {
     TIPOS_CONFIG[key] ?? {
       icon: 'fa-question-circle',
       label: key.toUpperCase(),
-      color: '#6b7280',
+      color: '#94A3B8',
     }
   );
 }
@@ -68,11 +65,11 @@ function createIcon(color: string, faClass: string, iconColor: string) {
     className: 'custom-marker',
     html: `<div style="
       width: 28px; height: 28px; border-radius: 50%;
-      background: ${color}; border: 3px solid white;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+      background: ${color}; border: 2.5px solid white;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.18);
       display: flex; align-items: center; justify-content: center;
     ">
-      <i class="fa ${faClass}" style="color:${iconColor};font-size:13px;"></i>
+      <i class="fa ${faClass}" style="color:${iconColor};font-size:12px;"></i>
     </div>`,
     iconSize: [28, 28],
     iconAnchor: [14, 14],
@@ -83,8 +80,6 @@ export default function MapView() {
   const [luminarias, setLuminarias] = useState<Luminaria[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
-  const [selectedLuminaria, setSelectedLuminaria] = useState<Luminaria | null>(null);
-  const [panelOpen, setPanelOpen] = useState(false);
   const [selectedFacultad, setSelectedFacultad] = useState(FACULTADES[0]);
   const [predictionMode, setPredictionMode] = useState<'actual' | 'prediccion'>('actual');
 
@@ -167,11 +162,6 @@ export default function MapView() {
     .filter((l) => l.luxes !== null && l.luxes > 0)
     .map((l) => [l.latitude, l.longitude, l.luxes! * 0.5]);
 
-  const handleMarkerClick = (l: Luminaria) => {
-    setSelectedLuminaria(l);
-    setPanelOpen(true);
-  };
-
   const renderMarker = (l: Luminaria) => {
     const configEstado = obtenerConfigEstado(l.estado);
     const color = configEstado.color;
@@ -184,9 +174,6 @@ export default function MapView() {
         key={l.id}
         position={[l.latitude, l.longitude]}
         icon={createIcon(color, configTipo.icon, '#ffffff')}
-        eventHandlers={{
-          click: () => handleMarkerClick(l),
-        }}
       >
         <Tooltip sticky>{tooltipText}</Tooltip>
         <Popup>
@@ -200,11 +187,11 @@ export default function MapView() {
     className: 'custom-marker',
     html: `<div style="
       width: 28px; height: 28px; border-radius: 50%;
-      background: #22c55e; border: 3px solid #86efac;
-      box-shadow: 0 2px 6px rgba(34,197,94,0.4);
+      background: #059669; border: 2.5px solid #86efac;
+      box-shadow: 0 1px 4px rgba(5,150,105,0.25);
       display: flex; align-items: center; justify-content: center;
     ">
-      <i class="fa fa-bolt" style="color:#ffffff;font-size:13px;"></i>
+      <i class="fa fa-bolt" style="color:#ffffff;font-size:12px;"></i>
     </div>`,
     iconSize: [28, 28],
     iconAnchor: [14, 14],
@@ -218,9 +205,6 @@ export default function MapView() {
         key={`pred-${l.id}`}
         position={[l.latitude, l.longitude]}
         icon={PREDICTION_ICON}
-        eventHandlers={{
-          click: () => handleMarkerClick(l as unknown as Luminaria),
-        }}
       >
         <Tooltip sticky>LED Pred. | {luxDisplay} | {l.facultad}</Tooltip>
         <Popup>
@@ -237,7 +221,7 @@ export default function MapView() {
           center={center}
           zoom={17}
           style={{ height: '100%', width: '100%' }}
-          zoomControl={true}
+          zoomControl={false}
         >
           <LayersControl position="topright" collapsed={false}>
             <BaseLayer checked name=" Calles">
@@ -299,8 +283,6 @@ export default function MapView() {
             </Overlay>
           </LayersControl>
 
-          <FullscreenControl />
-          <MiniMapControl />
           <SearchControl luminarias={displayLuminarias} />
         </MapContainer>
 
@@ -313,109 +295,11 @@ export default function MapView() {
 
         <PredictionToggle mode={predictionMode} onChange={setPredictionMode} />
 
-        <PredictionStats stats={predictionStats} visible={predictionMode === 'prediccion' && !panelOpen} />
+        <PredictionStats stats={predictionStats} visible={predictionMode === 'prediccion'} />
 
         {predictionMode === 'prediccion' && (
           <div className="prediction-badge">SIMULACIÓN LED</div>
         )}
-      </div>
-
-      <button
-        className={`btn-icon map-panel-toggle ${panelOpen ? 'panel-open' : ''}`}
-        onClick={() => setPanelOpen(!panelOpen)}
-        title={panelOpen ? 'Cerrar panel' : 'Abrir panel'}
-      >
-        {panelOpen ? <PanelRightClose size={18} /> : <PanelRightOpen size={18} />}
-      </button>
-
-      <div className={`detail-panel-overlay ${panelOpen ? '' : 'closed'}`}>
-        <div className="detail-panel-header">
-          <div className="detail-panel-title">
-            {selectedLuminaria ? `Luminaria #${selectedLuminaria.id}` : 'Detalles'}
-          </div>
-          <button className="btn-icon" onClick={() => setPanelOpen(false)}>
-            <PanelRightClose size={16} />
-          </button>
-        </div>
-        <div className="detail-panel-body">
-          {selectedLuminaria ? (
-            <>
-              <table className="data-table">
-                <tbody>
-                  <tr>
-                    <th>ID</th>
-                    <td>{selectedLuminaria.id}</td>
-                  </tr>
-                  <tr>
-                    <th>Sector</th>
-                    <td>{safeStr(selectedLuminaria.facultad)}</td>
-                  </tr>
-                  <tr>
-                    <th>Tipo</th>
-                    <td>{safeStr(selectedLuminaria.tipo).toUpperCase()}</td>
-                  </tr>
-                  <tr>
-                    <th>Altura Poste</th>
-                    <td>{selectedLuminaria.altura_poste ?? 'N/A'} m</td>
-                  </tr>
-                  <tr>
-                    <th>Estado</th>
-                    <td>
-                      <span className={`badge ${selectedLuminaria.estado?.toLowerCase() === 'enciende' ? 'badge-success' : selectedLuminaria.estado?.toLowerCase() === 'no enciende' ? 'badge-danger' : 'badge-warning'}`}>
-                        {selectedLuminaria.estado}
-                      </span>
-                    </td>
-                  </tr>
-                  <tr>
-                    <th>Luxes</th>
-                    <td>{selectedLuminaria.luxes !== null ? `${selectedLuminaria.luxes} lx` : 'Sin medición'}</td>
-                  </tr>
-                  <tr>
-                    <th>Edificio</th>
-                    <td>{safeStr(selectedLuminaria.edificio)}</td>
-                  </tr>
-                  <tr>
-                    <th>Latitud</th>
-                    <td>{selectedLuminaria.latitude.toFixed(6)}</td>
-                  </tr>
-                  <tr>
-                    <th>Longitud</th>
-                    <td>{selectedLuminaria.longitude.toFixed(6)}</td>
-                  </tr>
-                  <tr>
-                    <th>Altitud</th>
-                    <td>{selectedLuminaria.altitude !== null ? `${selectedLuminaria.altitude.toFixed(1)} msnm` : 'N/A'}</td>
-                  </tr>
-                </tbody>
-              </table>
-
-              <hr className="section-divider" />
-
-              <div style={{ fontSize: '0.75rem', fontWeight: 600, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.04em', marginBottom: '0.75rem' }}>
-                Fotografía
-              </div>
-              {selectedLuminaria.foto_url ? (
-                <img
-                  src={selectedLuminaria.foto_url}
-                  alt={`Luminaria #${selectedLuminaria.id}`}
-                  className="detail-photo"
-                  onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }}
-                />
-              ) : (
-                <div style={{ color: 'var(--text-muted)', fontSize: '0.8125rem', fontStyle: 'italic' }}>
-                  Sin fotografía disponible
-                </div>
-              )}
-            </>
-          ) : (
-            <div className="detail-empty">
-              <div className="detail-empty-icon">
-                <Map size={20} />
-              </div>
-              <div>Selecciona una luminaria en el mapa para ver sus detalles.</div>
-            </div>
-          )}
-        </div>
       </div>
     </div>
   );

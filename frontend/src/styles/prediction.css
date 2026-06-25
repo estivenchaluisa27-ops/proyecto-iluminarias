@@ -5,10 +5,10 @@
   z-index: 1000;
   display: flex;
   gap: 0;
-  background: rgba(15, 23, 42, 0.85);
-  border: 1px solid #334155;
-  border-radius: 6px;
-  backdrop-filter: blur(4px);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
   overflow: hidden;
 }
 
@@ -19,7 +19,7 @@
   padding: 0.4375rem 0.75rem;
   border: none;
   background: transparent;
-  color: #94a3b8;
+  color: var(--text-secondary);
   font-family: var(--font-sans);
   font-size: 0.75rem;
   font-weight: 500;
@@ -29,13 +29,13 @@
 }
 
 .prediction-toggle-btn:hover {
-  background: rgba(255, 255, 255, 0.05);
-  color: #f8fafc;
+  background: var(--surface-elevated);
+  color: var(--text-main);
 }
 
 .prediction-toggle-btn.active {
-  background: rgba(34, 197, 94, 0.15);
-  color: #4ade80;
+  background: rgba(5, 150, 105, 0.08);
+  color: var(--success);
 }
 
 .prediction-stats {
@@ -46,12 +46,12 @@
   width: 340px;
   max-height: calc(100vh - 1.5rem);
   overflow-y: auto;
-  background: rgba(15, 23, 42, 0.92);
-  border: 1px solid #334155;
-  border-radius: 6px;
-  backdrop-filter: blur(6px);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
   padding: 1rem;
-  color: #f8fafc;
+  color: var(--text-main);
 }
 
 .prediction-stats-header {
@@ -62,10 +62,10 @@
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.04em;
-  color: #4ade80;
+  color: var(--success);
   margin-bottom: 0.75rem;
   padding-bottom: 0.75rem;
-  border-bottom: 1px solid #334155;
+  border-bottom: 1px solid var(--border);
 }
 
 .prediction-stats-kpis {
@@ -76,9 +76,9 @@
 }
 
 .prediction-kpi {
-  background: rgba(255, 255, 255, 0.03);
-  border: 1px solid #334155;
-  border-radius: 4px;
+  background: var(--surface-elevated);
+  border: 1px solid var(--border);
+  border-radius: 6px;
   padding: 0.625rem;
 }
 
@@ -90,7 +90,7 @@
   font-weight: 500;
   text-transform: uppercase;
   letter-spacing: 0.04em;
-  color: #64748b;
+  color: var(--text-muted);
   margin-bottom: 0.375rem;
 }
 
@@ -104,39 +104,39 @@
 }
 
 .prediction-kpi-old {
-  color: #94a3b8;
+  color: var(--text-muted);
   text-decoration: line-through;
   font-size: 0.75rem;
 }
 
 .prediction-kpi-arrow {
-  color: #475569;
+  color: var(--border-light);
   font-size: 0.75rem;
 }
 
 .prediction-kpi-new {
-  color: #4ade80;
+  color: var(--success);
 }
 
 .prediction-kpi-value {
   font-family: var(--font-mono);
   font-size: 1.125rem;
   font-weight: 600;
-  color: #f8fafc;
+  color: var(--text-main);
 }
 
 .prediction-kpi-value.accent {
-  color: #3b82f6;
+  color: var(--accent);
 }
 
 .prediction-kpi-value.success {
-  color: #22c55e;
+  color: var(--success);
 }
 
 .prediction-stats-section {
   margin-top: 0.75rem;
   padding-top: 0.75rem;
-  border-top: 1px solid #334155;
+  border-top: 1px solid var(--border);
 }
 
 .prediction-stats-section-title {
@@ -147,7 +147,7 @@
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.04em;
-  color: #64748b;
+  color: var(--text-muted);
   margin-bottom: 0.5rem;
 }
 
@@ -170,15 +170,15 @@
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-  color: #94a3b8 !important;
+  color: var(--text-secondary) !important;
 }
 
 .prediction-disclaimer {
   margin-top: 0.75rem;
   padding-top: 0.625rem;
-  border-top: 1px solid #334155;
+  border-top: 1px solid var(--border);
   font-size: 0.625rem;
-  color: #475569;
+  color: var(--text-muted);
   line-height: 1.5;
 }
 
@@ -188,21 +188,15 @@
   left: 50%;
   transform: translateX(-50%);
   z-index: 1000;
-  background: rgba(34, 197, 94, 0.15);
-  border: 1px solid rgba(34, 197, 94, 0.4);
-  color: #4ade80;
+  background: var(--surface);
+  border: 1px solid var(--success);
+  color: var(--success);
   font-family: var(--font-mono);
   font-size: 0.6875rem;
-  font-weight: 700;
+  font-weight: 600;
   letter-spacing: 0.08em;
   padding: 0.375rem 1rem;
-  border-radius: 3px;
-  backdrop-filter: blur(4px);
+  border-radius: 6px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
   pointer-events: none;
-  animation: prediction-pulse 2s ease-in-out infinite;
-}
-
-@keyframes prediction-pulse {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0.7; }
 }

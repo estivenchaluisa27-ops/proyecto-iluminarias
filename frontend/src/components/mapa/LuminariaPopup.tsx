@@ -78,7 +78,7 @@ export function PredictionPopup({ l }: PredictionPopupProps) {
     <div className="popup-container">
       <h4 className="popup-title">
         Luminaria #{l.id}
-        <div className="popup-subtitle" style={{ color: '#4ade80' }}>
+        <div className="popup-subtitle" style={{ color: 'var(--success)' }}>
           Predicción LED
         </div>
       </h4>
