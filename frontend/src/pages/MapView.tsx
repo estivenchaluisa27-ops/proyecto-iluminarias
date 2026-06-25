@@ -12,7 +12,7 @@ import L from 'leaflet';
 import { luminariasService } from '../services/luminarias.service';
 import type { Luminaria } from '../types/luminaria';
 import type { PredictionLuminaria } from '../types/luminaria';
-import HeatmapLayer from '../components/mapa/HeatmapLayer';
+// import HeatmapLayer from '../components/mapa/HeatmapLayer';
 import SearchControl from '../components/mapa/SearchControl';
 import FacultyFilter from '../components/mapa/FacultyFilter';
 import PredictionToggle from '../components/mapa/PredictionToggle';
@@ -130,12 +130,13 @@ export default function MapView() {
     );
   }
 
-  if (luminarias.length === 0) return null;
-
-  const center: [number, number] = [
-    luminarias[0].latitude,
-    luminarias[0].longitude,
-  ];
+  // Si no hay luminarias, usar un centro por defecto (campus universitario)
+  const center: [number, number] = luminarias.length > 0
+    ? [luminarias[0].latitude, luminarias[0].longitude]
+    : [4.6386, -74.0842]; // Coordenadas por defecto (Bogotá, campus universitario)
+  
+  // Mostrar mensaje si no hay luminarias, pero mantener el mapa
+  const noData = luminarias.length === 0;
 
   const fgLed = {
     markers: displayLuminarias.filter(
@@ -158,9 +159,9 @@ export default function MapView() {
     show: true,
   };
 
-  const heatmapData: Array<[number, number, number]> = displayLuminarias
-    .filter((l) => l.luxes !== null && l.luxes > 0)
-    .map((l) => [l.latitude, l.longitude, l.luxes! * 0.5]);
+  // const heatmapData: Array<[number, number, number]> = displayLuminarias
+  //   .filter((l) => l.luxes !== null && l.luxes > 0)
+  //   .map((l) => [l.latitude, l.longitude, l.luxes! * 0.5]);
 
   const renderMarker = (l: Luminaria) => {
     const configEstado = obtenerConfigEstado(l.estado);
@@ -216,6 +217,16 @@ export default function MapView() {
 
   return (
     <div className="map-wrapper">
+      {noData && (
+        <div className="no-data-overlay">
+          <div className="no-data-message">
+            <p>No hay datos de luminarias disponibles</p>
+            <button onClick={retry} className="btn btn-primary">
+              Reintentar
+            </button>
+          </div>
+        </div>
+      )}
       <div className="map-container-full">
         <MapContainer
           center={center}
@@ -276,11 +287,11 @@ export default function MapView() {
                 </FeatureGroup>
               </Overlay>
             )}
-            <Overlay name=" Mapa de Calor">
+            {/* <Overlay name=" Mapa de Calor">
               {heatmapData.length > 0 && (
                 <HeatmapLayer latlngs={heatmapData} />
               )}
-            </Overlay>
+            </Overlay> */}
           </LayersControl>
 
           <SearchControl luminarias={displayLuminarias} />
