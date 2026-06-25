@@ -1,9 +1,10 @@
 import { useEffect, useState } from 'react';
 import { Routes, Route, Link, useLocation, useNavigate } from 'react-router-dom';
-import { LayoutDashboard, Map, Users, Settings, LogOut, Lightbulb, Zap, Activity, Thermometer, Menu, LightbulbOff } from 'lucide-react';
+import { LayoutDashboard, Map, Users, Settings, LogOut, Lightbulb, Zap, Activity, Thermometer, Menu, LightbulbOff, Filter } from 'lucide-react';
 import { useAuth } from '../hooks/useAuth';
 import { luminariasService } from '../services/luminarias.service';
 import type { LuminariaStats, Luminaria } from '../types/luminaria';
+import { FACULTADES } from '../types/luminaria';
 import MapView from './MapView';
 import UsersPage from './UsersPage';
 import SettingsPage from './SettingsPage';
@@ -12,6 +13,7 @@ function DashboardHome() {
   const [stats, setStats] = useState<LuminariaStats | null>(null);
   const [recentIssues, setRecentIssues] = useState<Luminaria[]>([]);
   const [error, setError] = useState('');
+  const [homeFacultad, setHomeFacultad] = useState(FACULTADES[0]);
 
   useEffect(() => {
     luminariasService.getStats().then(setStats).catch((e) => setError(e.message));
@@ -22,6 +24,10 @@ function DashboardHome() {
       })
       .catch(() => {});
   }, []);
+
+  const homeFilteredIssues = homeFacultad === FACULTADES[0]
+    ? recentIssues
+    : recentIssues.filter((l) => l.facultad?.trim() === homeFacultad);
 
   if (error) {
     return (
@@ -71,7 +77,20 @@ function DashboardHome() {
           <div className="home-section-title">
             <Activity size={14} /> Luminarias con Incidencias
           </div>
-          {recentIssues.length === 0 ? (
+          <div className="incidencias-filter">
+            <Filter size={12} />
+            <select
+              className="incidencias-filter-select"
+              value={homeFacultad}
+              onChange={(e) => setHomeFacultad(e.target.value)}
+            >
+              {FACULTADES.map((f) => (
+                <option key={f} value={f}>{f}</option>
+              ))}
+            </select>
+            <span className="incidencias-count">{homeFilteredIssues.length} resultados</span>
+          </div>
+          {homeFilteredIssues.length === 0 ? (
             <div style={{ color: 'var(--text-muted)', fontSize: '0.8125rem', padding: '0.5rem 0' }}>
               Sin incidencias registradas.
             </div>
@@ -87,7 +106,7 @@ function DashboardHome() {
                 </tr>
               </thead>
               <tbody>
-                {recentIssues.map(l => (
+                {homeFilteredIssues.map(l => (
                   <tr key={l.id}>
                     <td style={{ fontFamily: 'var(--font-mono)' }}>{l.id}</td>
                     <td>{l.facultad}</td>

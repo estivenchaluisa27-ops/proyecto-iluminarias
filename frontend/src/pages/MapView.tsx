@@ -16,6 +16,8 @@ import HeatmapLayer from '../components/mapa/HeatmapLayer';
 import FullscreenControl from '../components/mapa/FullscreenControl';
 import MiniMapControl from '../components/mapa/MiniMapControl';
 import SearchControl from '../components/mapa/SearchControl';
+import FacultyFilter from '../components/mapa/FacultyFilter';
+import { FACULTADES } from '../types/luminaria';
 import 'leaflet/dist/leaflet.css';
 
 const { BaseLayer, Overlay } = LayersControl;
@@ -153,6 +155,11 @@ export default function MapView() {
   const [error, setError] = useState('');
   const [selectedLuminaria, setSelectedLuminaria] = useState<Luminaria | null>(null);
   const [panelOpen, setPanelOpen] = useState(false);
+  const [selectedFacultad, setSelectedFacultad] = useState(FACULTADES[0]);
+
+  const filteredLuminarias = selectedFacultad === FACULTADES[0]
+    ? luminarias
+    : luminarias.filter((l) => l.facultad?.trim() === selectedFacultad);
 
   const retry = () => {
     setError('');
@@ -199,19 +206,19 @@ export default function MapView() {
   ];
 
   const fgLed = {
-    markers: luminarias.filter(
+    markers: filteredLuminarias.filter(
       (l) => l.tipo?.toLowerCase() === 'led'
     ),
     show: true,
   };
   const fgSodio = {
-    markers: luminarias.filter(
+    markers: filteredLuminarias.filter(
       (l) => l.tipo?.toLowerCase() === 'sodio'
     ),
     show: true,
   };
   const fgOtros = {
-    markers: luminarias.filter(
+    markers: filteredLuminarias.filter(
       (l) =>
         l.tipo?.toLowerCase() !== 'led' &&
         l.tipo?.toLowerCase() !== 'sodio'
@@ -219,7 +226,7 @@ export default function MapView() {
     show: true,
   };
 
-  const heatmapData: Array<[number, number, number]> = luminarias
+  const heatmapData: Array<[number, number, number]> = filteredLuminarias
     .filter((l) => l.luxes !== null && l.luxes > 0)
     .map((l) => [l.latitude, l.longitude, l.luxes! * 0.5]);
 
@@ -334,8 +341,15 @@ export default function MapView() {
 
           <FullscreenControl />
           <MiniMapControl />
-          <SearchControl luminarias={luminarias} />
+          <SearchControl luminarias={filteredLuminarias} />
         </MapContainer>
+
+        <FacultyFilter
+          selected={selectedFacultad}
+          onChange={setSelectedFacultad}
+          filteredCount={luminarias.length > 0 ? filteredLuminarias.length : 0}
+          totalCount={luminarias.length}
+        />
       </div>
 
       <button

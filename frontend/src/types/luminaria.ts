@@ -29,3 +29,23 @@ export interface LuminariaStats {
 
 export type EstadoFoco = 'enciende' | 'no enciende' | 'dañado/parpadea';
 export type TipoLuminaria = 'led' | 'sodio';
+
+export const FACULTADES: string[] = [
+  'Todas las facultades',
+  'Ingeniería y ciencias aplicadas',
+  'Servicios Generales (Fisica)',
+  'Facultad de Ciencias Sociales y Humanas',
+  'Facultad de Ingeniería y Ciencias Aplicadas',
+  'Facultad de Filosofía y Letras',
+  'Facultad Jurisprudencia',
+  'Facultad de Ciencias Psicológicas',
+  'Facultad de Comunicación Social',
+  'Facultad de Ingenieria Química',
+  'Facultad de Odontología',
+  'Facultad de Cultura Física',
+  'Facultad de Ciencias Administrativas',
+  'Facultad de Ciencias Económicas',
+  'Facultad de Arquitectura y Urbanismo',
+  'Facultad de Artes',
+  'Facultad de Ciencias',
+];

@@ -11,8 +11,8 @@
 | Proyecto | Sistema de monitoreo y mapeo de luminarias del campus universitario |
 | Repositorio | `proyecto-iluminarias` |
 | Fecha análisis | 2026-06-25 |
-| **Fase actual** | **Fase 0 — Análisis y planificación completados** |
-| Estado actual | Sin cambios de código todavía; plan aprobado por el usuario |
+| **Fase actual** | **Fase 1 — Filtro por Facultad (completada)** |
+| Estado actual | Filtro por facultad funcional en el mapa y dashboard. Listo para Fase 2. |
 
 ### Stack detectado
 
@@ -74,24 +74,24 @@
 - [x] Definición de decisiones clave con el usuario.
 - [x] Creación de este documento.
 
-### Fase 1 — Filtro por Facultad
+### Fase 1 — Filtro por Facultad ✅
 
 **Objetivo:** Permitir filtrar luminarias por facultad en el mapa y en el dashboard.
 
-| # | Tarea | Archivos afectados |
-|---|-------|--------------------|
-| 1.1 | Crear componente `FacultyFilter.tsx` | `frontend/src/components/mapa/FacultyFilter.tsx` (nuevo) |
-| 1.2 | Agregar constante de facultades y tipos filtrables | `frontend/src/types/luminaria.ts` |
-| 1.3 | Integrar filtro en `MapView` y actualizar capas (markers, heatmap, búsqueda) | `frontend/src/pages/MapView.tsx` |
-| 1.4 | Aceptar `facultad` como prop en `SearchControl` | `frontend/src/components/mapa/SearchControl.tsx` |
-| 1.5 | Agregar filtro en DashboardHome + stats dinámicos | `frontend/src/pages/Dashboard.tsx` |
-| 1.6 | Estilos para dropdown flotante oscuro | `frontend/src/index.css` |
+| # | Tarea | Archivos afectados | Estado |
+|---|-------|--------------------|--------|
+| 1.1 | Crear componente `FacultyFilter.tsx` | `frontend/src/components/mapa/FacultyFilter.tsx` (nuevo) | ✅ |
+| 1.2 | Agregar constante de facultades | `frontend/src/types/luminaria.ts` | ✅ |
+| 1.3 | Integrar filtro en `MapView` (markers, heatmap, búsqueda) | `frontend/src/pages/MapView.tsx` | ✅ |
+| 1.4 | Pasar `filteredLuminarias` a `SearchControl` | `frontend/src/pages/MapView.tsx` | ✅ |
+| 1.5 | Agregar filtro en DashboardHome + incidencias dinámicas | `frontend/src/pages/Dashboard.tsx` | ✅ |
+| 1.6 | Estilos para dropdown flotante oscuro | `frontend/src/index.css` | ✅ |
 
-**Criterios de aceptación:**
-- El usuario puede elegir una facultad del dropdown.
-- El mapa, heatmap y búsqueda responden al filtro.
-- Se muestra contador "Mostrando X/Y luminarias".
-- El dashboard refleja stats de la facultad seleccionada.
+**Criterios de aceptación cumplidos:**
+- [x] Dropdown flotante sobre el mapa con las 16 facultades + "Todas las facultades".
+- [x] El mapa, heatmap y búsqueda responden al filtro.
+- [x] Contador "X/Y" visible.
+- [x] Dashboard con filtro por facultad en la tabla de incidencias.
 
 ### Fase 2 — Ventana de Predicción LED
 
@@ -175,6 +175,11 @@ function predict(luminaria) {
 ## 6. Registro de Cambios (Change Log)
 
 ### 2026-06-25
+- **Fase 1 completada:** Filtro por facultad implementado.
+  - Nuevo componente `FacultyFilter.tsx` con dropdown flotante sobre el mapa.
+  - Mapa, heatmap y búsqueda responden al filtro seleccionado.
+  - DashboardHome con selector de facultad que filtra la tabla de incidencias.
+  - Estilos oscuros consistentes con el diseño existente.
 - Se completó el análisis del proyecto.
 - Se definieron las decisiones arquitectónicas clave (ver sección 2).
 - Se creó este plan de implementación (`PROJECT_PLAN.md`).
