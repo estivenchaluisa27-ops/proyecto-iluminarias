@@ -11,8 +11,8 @@
 | Proyecto | Sistema de monitoreo y mapeo de luminarias del campus universitario |
 | Repositorio | `proyecto-iluminarias` |
 | Fecha análisis | 2026-06-25 |
-| **Fase actual** | **Fase 1 — Filtro por Facultad (completada)** |
-| Estado actual | Filtro por facultad funcional en el mapa y dashboard. Listo para Fase 2. |
+| **Fase actual** | **Fase 2 — Predicción LED (completada)** |
+| Estado actual | Filtro por facultad + predicción LED funcionales. Listo para Fase 3. |
 
 ### Stack detectado
 
@@ -52,8 +52,8 @@
 
 | Prioridad | Tema | Impacto | Solución prevista |
 |-----------|------|---------|-------------------|
-| Alta | Filtro por facultad no existe | Mapa siempre muestra todo el campus; difícil análisis por unidad académica | Fase 1: dropdown flotante sobre el mapa |
-| Alta | No hay predicción LED | No se puede dimensionar el impacto de modernización | Fase 2: tabla + KPI + mapa simulado |
+| ~~Alta~~ | ~~Filtro por facultad no existe~~ | ~~Mapa siempre muestra todo el campus~~ | ✅ Fase 1: dropdown flotante |
+| ~~Alta~~ | ~~No hay predicción LED~~ | ~~No se puede dimensionar modernización~~ | ✅ Fase 2: toggle + KPI + mapa simulado |
 | Media | Backend lee JSON, frontend usa Firestore | Inconsistencia de fuente de verdad | Mantener JSON para backend (decisión #1), documentar |
 | Media | `MapView.tsx` renderiza todos los markers directamente | Posible pérdida de performance si crece el dataset | Modularizar en subcomponentes, evaluar virtualización |
 | Media | Popups usan `dangerouslySetInnerHTML` | Riesgo de XSS si datos externos no son confiables | Fase 3: reemplazar popups por JSX puro |
@@ -93,50 +93,56 @@
 - [x] Contador "X/Y" visible.
 - [x] Dashboard con filtro por facultad en la tabla de incidencias.
 
-### Fase 2 — Ventana de Predicción LED
+### Fase 2 — Ventana de Predicción LED ✅
 
 **Objetivo:** Visualizar un escenario hipotético donde todas las luminarias son LED y funcionan, además de reportar luxes promedio proyectados.
 
-| # | Tarea | Archivos afectados |
-|---|-------|--------------------|
-| 2.1 | Crear hook `usePrediction.ts` con lógica de predicción | `frontend/src/hooks/usePrediction.ts` (nuevo) |
-| 2.2 | Crear `PredictionToggle.tsx` | `frontend/src/components/mapa/PredictionToggle.tsx` (nuevo) |
-| 2.3 | Crear `PredictionStats.tsx` con KPIs comparativos | `frontend/src/components/mapa/PredictionStats.tsx` (nuevo) |
-| 2.4 | Crear tipos de predicción | `frontend/src/types/luminaria.ts` |
-| 2.5 | Integrar toggle y panel en `MapView` | `frontend/src/pages/MapView.tsx` |
-| 2.6 | Renderizar markers predichos (todos LED, todos funcionando) | `frontend/src/pages/MapView.tsx` |
-| 2.7 | Estilos para toggle y panel de predicción | `frontend/src/index.css` |
+| # | Tarea | Archivos afectados | Estado |
+|---|-------|--------------------|--------|
+| 2.1 | Crear hook `usePrediction.ts` con lógica de predicción | `frontend/src/hooks/usePrediction.ts` (nuevo) | ✅ |
+| 2.2 | Crear `PredictionToggle.tsx` | `frontend/src/components/mapa/PredictionToggle.tsx` (nuevo) | ✅ |
+| 2.3 | Crear `PredictionStats.tsx` con KPIs comparativos | `frontend/src/components/mapa/PredictionStats.tsx` (nuevo) | ✅ |
+| 2.4 | Crear tipos de predicción | `frontend/src/types/luminaria.ts` | ✅ |
+| 2.5 | Integrar toggle y panel en `MapView` | `frontend/src/pages/MapView.tsx` | ✅ |
+| 2.6 | Renderizar markers predichos (todos LED, todos funcionando) | `frontend/src/pages/MapView.tsx` | ✅ |
+| 2.7 | Estilos para toggle y panel de predicción | `frontend/src/index.css` | ✅ |
 
-**Lógica de predicción (a implementar):**
+**Lógica implementada:**
 
 ```ts
-// Pseudocódigo resumen
+// Factor de conversión basado en datos reales
+const LED_SODIO_FACTOR = 68.9 / 64.0; // ≈ 1.08
+
 function predict(luminaria) {
-  const conversionFactor = 68.9 / 64.0; // 1.08
   return {
     ...luminaria,
     tipo: 'led',
     estado: 'enciende',
     luxes: luminaria.luxes > 0
       ? (luminaria.tipo === 'sodio'
-          ? luminaria.luxes * conversionFactor
+          ? luminaria.luxes * LED_SODIO_FACTOR
           : luminaria.luxes)
       : 68.9, // promedio LED real para faltantes
+    tipoOriginal, estadoOriginal, luxesOriginal,
   };
 }
 ```
 
-**KPIs mínimos a mostrar:**
-- Luxes promedio actual vs predicho.
-- % de mejora proyectada.
-- Total de luminarias que cambiarían de sodio a LED.
-- Número de luminarias que pasan de "no funciona" a "funcionando".
+**KPIs implementados:**
+- [x] Luxes promedio actual vs predicho.
+- [x] % de mejora proyectada.
+- [x] Total de luminarias que cambiarían de sodio a LED.
+- [x] Número de luminarias que pasan de "no funciona" a "funcionando".
+- [x] Tabla comparativa por facultad.
 
-**Criterios de aceptación:**
-- Existe un toggle claro Actual / Predicción LED.
-- En modo predicción el mapa muestra todos los puntos en verde (funcionando) con icono LED.
-- El usuario puede ver el lux promedio proyectado.
-- El heatmap se actualiza con los luxes predichos.
+**Criterios de aceptación cumplidos:**
+- [x] Toggle claro Actual / Predicción LED.
+- [x] En modo predicción el mapa muestra todos los puntos en verde con icono LED.
+- [x] El usuario puede ver el lux promedio proyectado.
+- [x] El heatmap se actualiza con los luxes predichos.
+- [x] Badge "SIMULACIÓN LED" visible en modo predicción.
+- [x] Panel de	stats se oculta si se abre el panel de detalles (evita overlap).
+- [x] Popups de predicción muestran tipo/estado original vs predicho.
 
 ### Fase 3 — Mejoras Técnicas
 
@@ -175,6 +181,15 @@ function predict(luminaria) {
 ## 6. Registro de Cambios (Change Log)
 
 ### 2026-06-25
+- **Fase 2 completada:** Predicción LED implementada.
+  - Nuevo hook `usePrediction.ts` con lógica de conversión sodio→LED.
+  - Componentes `PredictionToggle.tsx` y `PredictionStats.tsx`.
+  - Mapa alterna entre estado actual y predicción LED con un toggle.
+  - KPIs: luxes promedio actual vs predicho, mejora %, sodio→LED, reparadas.
+  - Tabla comparativa por facultad en panel de predicción.
+  - Badge "SIMULACIÓN LED" cuando el modo está activo.
+  - Markers de predicción (verde uniforme, icono rayo LED).
+  - Popups de predicción muestran valores originales vs predichos.
 - **Fase 1 completada:** Filtro por facultad implementado.
   - Nuevo componente `FacultyFilter.tsx` con dropdown flotante sobre el mapa.
   - Mapa, heatmap y búsqueda responden al filtro seleccionado.

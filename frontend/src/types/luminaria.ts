@@ -30,6 +30,34 @@ export interface LuminariaStats {
 export type EstadoFoco = 'enciende' | 'no enciende' | 'dañado/parpadea';
 export type TipoLuminaria = 'led' | 'sodio';
 
+export interface PredictionLuminaria extends Luminaria {
+  tipoOriginal: string;
+  estadoOriginal: string;
+  luxesOriginal: number | null;
+}
+
+export interface PredictionStatsData {
+  totalLuminarias: number;
+  sodioToLed: number;
+  reparadas: number;
+  luxesPromedioActual: number;
+  luxesPromedioPredicho: number;
+  mejoraPorcentual: number;
+  ahorroEnergeticoEstimado: number;
+  porFacultad: Record<string, {
+    total: number;
+    sodioToLed: number;
+    reparadas: number;
+    luxesActual: number;
+    luxesPredicho: number;
+    mejora: number;
+  }>;
+}
+
+export const LED_AVG_LUX = 68.9;
+export const SODIO_AVG_LUX = 64.0;
+export const LED_SODIO_FACTOR = LED_AVG_LUX / SODIO_AVG_LUX;
+
 export const FACULTADES: string[] = [
   'Todas las facultades',
   'Ingeniería y ciencias aplicadas',
