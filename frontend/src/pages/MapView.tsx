@@ -68,11 +68,11 @@ function MapResizer({ onToggleHeatmap }: { onToggleHeatmap?: (show: boolean) => 
 
   useEffect(() => {
     map.invalidateSize();
-    const handleAdd = (e: Record<string, unknown>) => {
-      if (e.name === ' Mapa de Calor') cbRef.current?.(true);
+    const handleAdd = (e: L.LeafletEvent) => {
+      if ((e as L.LayersControlEvent).name === ' Mapa de Calor') cbRef.current?.(true);
     };
-    const handleRemove = (e: Record<string, unknown>) => {
-      if (e.name === ' Mapa de Calor') cbRef.current?.(false);
+    const handleRemove = (e: L.LeafletEvent) => {
+      if ((e as L.LayersControlEvent).name === ' Mapa de Calor') cbRef.current?.(false);
     };
     map.on('overlayadd', handleAdd);
     map.on('overlayremove', handleRemove);
@@ -187,7 +187,7 @@ export default function MapView() {
 
   const heatmapData: Array<[number, number, number]> = displayLuminarias
     .filter((l) => l.luxes !== null && l.luxes > 0)
-    .map((l) => [l.latitude, l.longitude, l.luxes * 0.5]);
+    .map((l) => [l.latitude, l.longitude, (l.luxes as number) * 0.5]);
 
   const renderMarker = (l: Luminaria) => {
     const configEstado = obtenerConfigEstado(l.estado);
@@ -313,7 +313,9 @@ export default function MapView() {
                 </FeatureGroup>
               </Overlay>
             )}
-            <Overlay name=" Mapa de Calor" />
+            <Overlay name=" Mapa de Calor">
+              <FeatureGroup />
+            </Overlay>
 
             {showHeatmap && heatmapData.length > 0 && (
               <HeatmapLayer latlngs={heatmapData} />
