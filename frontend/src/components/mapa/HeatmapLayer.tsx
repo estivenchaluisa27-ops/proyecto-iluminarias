@@ -20,36 +20,6 @@ const HEATMAP_GRADIENT: Record<number, string> = {
   1.0: '#d73027',
 };
 
-// =========================================================================
-// PATCH GLOBAL PARA leaflet.heat — evitar crash cuando el canvas mide 0x0
-// =========================================================================
-// @ts-ignore — evitar errores de TypeScript por propiedades no tipadas
-if (!L.HeatLayer.prototype.hasOwnProperty('__patched')) {
-  // Guardar el original
-  // @ts-ignore
-  const originalRedraw = L.HeatLayer.prototype._redraw;
-
-  // Aplicar el patch
-  // @ts-ignore
-  L.HeatLayer.prototype._redraw = function _redraw() {
-    // Type assertion para acceder a _canvas y _map
-    const self = this as any;
-    // Si el mapa no está listo o el canvas no tiene dimensiones, retornar temprano
-    if (!self._map || !self._canvas || self._canvas.width === 0 || self._canvas.height === 0) {
-      return;
-    }
-    // @ts-ignore
-    return originalRedraw.call(self);
-  };
-
-  // Marcar como parcheado para evitar re-aplicación
-  // @ts-ignore
-  L.HeatLayer.prototype.__patched = true;
-}
-
-// =========================================================================
-// COMPONENTE HEATMAPLAYER
-// =========================================================================
 export default function HeatmapLayer({
   latlngs,
   radius = 30,
@@ -65,23 +35,19 @@ export default function HeatmapLayer({
     // Forzar recálculo de tamaño del mapa para evitar canvas 0x0
     map.invalidateSize();
 
-    // Esperar a que el mapa esté listo (layout completo)
-    const readyHandler = () => {
-      const heat = L.heatLayer(latlngs, {
-        radius,
-        blur,
-        maxZoom,
-        gradient,
-        minOpacity: 0.4,
-      });
-      heat.addTo(map);
+    // Crear el heatmap directamente (sin whenReady)
+    const heat = L.heatLayer(latlngs, {
+      radius,
+      blur,
+      maxZoom,
+      gradient,
+      minOpacity: 0.4,
+    });
+    heat.addTo(map);
 
-      return () => {
-        map.removeLayer(heat);
-      };
+    return () => {
+      map.removeLayer(heat);
     };
-
-    map.whenReady(readyHandler);
   }, [map, latlngs, radius, blur, maxZoom, gradient]);
 
   return null;

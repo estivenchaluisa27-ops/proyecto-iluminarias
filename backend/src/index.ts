@@ -3,6 +3,7 @@ import cors from 'cors';
 import dotenv from 'dotenv';
 import { initializeApp, cert } from 'firebase-admin/app';
 import luminariasRouter from './routes/luminarias.routes.js';
+import usersRouter from './routes/users.routes.js';
 
 dotenv.config();
 
@@ -34,6 +35,7 @@ app.get('/api/health', (_req, res) => {
 });
 
 app.use('/api/luminarias', luminariasRouter);
+app.use('/api/users', usersRouter);
 
 app.listen(port, () => {
   console.log(`Server running on port ${port}`);
