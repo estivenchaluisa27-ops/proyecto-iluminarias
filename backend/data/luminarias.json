@@ -3006,24 +3006,6 @@
     "submitted_by": null
   },
   {
-    "id": 768186237,
-    "facultad": "Facultad de Ciencias Psicológicas",
-    "latitude": -0.200194,
-    "longitude": -0.78506628,
-    "altitude": 0.0,
-    "precision": 0.0,
-    "tipo": "led",
-    "altura_poste": 4.3,
-    "luxes": 72.0,
-    "estado": "enciende",
-    "etiqueta": "P7",
-    "edificio": "No",
-    "foto_url": "https://kf.kobotoolbox.org/api/v2/assets/aMA6LiTGxeVVbQDCxZmC7C/data/768186237/attachments/att22djeJhu5bHBCD8Fukwnd/",
-    "uuid": "43552c51-f0b4-47d8-b54b-fb0813938b0b",
-    "grupo": 6,
-    "submitted_by": null
-  },
-  {
     "id": 768186991,
     "facultad": "Facultad de Ciencias Psicológicas",
     "latitude": -0.200213,
