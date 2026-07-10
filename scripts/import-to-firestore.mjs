@@ -26,17 +26,39 @@ initializeApp({
 });
 
 const db = getFirestore();
+const COL = 'luminarias';
 
 const dataPath = path.resolve(__dirname, '../backend/data/luminarias.json');
 const luminarias = JSON.parse(readFileSync(dataPath, 'utf-8'));
 
 console.log(`Importando ${luminarias.length} luminarias a Firestore...`);
 
-const batch = db.batch();
-for (const lum of luminarias) {
-  const ref = db.collection('luminarias').doc(String(lum.id));
-  batch.set(ref, lum);
+// Eliminar todos los documentos existentes en Firestore que ya no estan en el JSON
+const existingSnap = await db.collection(COL).get();
+const idsEnJson = new Set(luminarias.map((l) => String(l.id)));
+const docsEliminar = existingSnap.docs.filter((d) => !idsEnJson.has(d.id));
+
+if (docsEliminar.length > 0) {
+  console.log(`Eliminando ${docsEliminar.length} documentos obsoletos de Firestore...`);
+  for (let i = 0; i < docsEliminar.length; i += 500) {
+    const batch = db.batch();
+    const chunk = docsEliminar.slice(i, i + 500);
+    for (const doc of chunk) {
+      batch.delete(doc.ref);
+    }
+    await batch.commit();
+  }
 }
 
-await batch.commit();
-console.log('✅ Importación completada exitosamente');
+// Escribir los datos actualizados
+for (let i = 0; i < luminarias.length; i += 500) {
+  const batch = db.batch();
+  const chunk = luminarias.slice(i, i + 500);
+  for (const lum of chunk) {
+    const ref = db.collection(COL).doc(String(lum.id));
+    batch.set(ref, lum);
+  }
+  await batch.commit();
+}
+
+console.log('✅ Importacion completada exitosamente');
