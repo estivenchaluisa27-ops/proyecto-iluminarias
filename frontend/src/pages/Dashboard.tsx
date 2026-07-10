@@ -1,33 +1,21 @@
 import { useEffect, useState, useRef } from 'react';
 import { Routes, Route, Link, useLocation, useNavigate } from 'react-router-dom';
-import { LayoutDashboard, Map, Users, Settings, LogOut, Lightbulb, Zap, Activity, Thermometer, Menu, LightbulbOff, Filter, X } from 'lucide-react';
+import { LayoutDashboard, Map, Users, Settings, LogOut, Menu, X } from 'lucide-react';
 import { useAuth } from '../hooks/useAuth';
 import { luminariasService } from '../services/luminarias.service';
-import type { LuminariaStats, Luminaria } from '../types/luminaria';
-import { FACULTADES } from '../types/luminaria';
+import type { LuminariaStats } from '../types/luminaria';
 import MapView from './MapView';
 import UsersPage from './UsersPage';
 import SettingsPage from './SettingsPage';
+import AnalyticsDashboard from '../components/analytics/AnalyticsDashboard';
 
 function DashboardHome() {
   const [stats, setStats] = useState<LuminariaStats | null>(null);
-  const [recentIssues, setRecentIssues] = useState<Luminaria[]>([]);
   const [error, setError] = useState('');
-  const [homeFacultad, setHomeFacultad] = useState(FACULTADES[0]);
 
   useEffect(() => {
     luminariasService.getStats().then(setStats).catch((e) => setError(e.message));
-    luminariasService.getAll()
-      .then(data => {
-        const damaged = data.filter(l => l.estado?.toLowerCase() !== 'enciende');
-        setRecentIssues(damaged.slice(0, 8));
-      })
-      .catch(() => {});
   }, []);
-
-  const homeFilteredIssues = homeFacultad === FACULTADES[0]
-    ? recentIssues
-    : recentIssues.filter((l) => l.facultad?.trim() === homeFacultad);
 
   if (error) {
     return (
@@ -37,95 +25,7 @@ function DashboardHome() {
     );
   }
 
-  return (
-    <>
-      <div className="stats-grid">
-        <div className="stat-card">
-          <div className="stat-card-header">
-            <Lightbulb size={14} />
-            Total Luminarias
-          </div>
-          <div className="stat-card-value">{stats?.total ?? '...'}</div>
-        </div>
-        <div className="stat-card">
-          <div className="stat-card-header">
-            <Zap size={14} />
-            Funcionan
-          </div>
-          <div className="stat-card-value success">{stats?.porEstado?.enciende ?? '...'}</div>
-        </div>
-        <div className="stat-card">
-          <div className="stat-card-header">
-            <LightbulbOff size={14} />
-            No funcionan
-          </div>
-          <div className="stat-card-value warning">
-            {stats ? ((stats.porEstado?.['no enciende'] ?? 0) + (stats.porEstado?.['dañado/parpadea'] ?? 0) + (stats.porEstado?.['desconocido'] ?? 0)) : '...'}
-          </div>
-        </div>
-        <div className="stat-card">
-          <div className="stat-card-header">
-            <Thermometer size={14} />
-            Luxes Promedio
-          </div>
-          <div className="stat-card-value accent">{stats?.luxesPromedio ? `${Math.round(stats.luxesPromedio)} lx` : '...'}</div>
-        </div>
-      </div>
-
-      <div className="home-grid">
-        <div className="home-section full">
-          <div className="home-section-title">
-            <Activity size={14} /> Luminarias con Incidencias
-          </div>
-          <div className="incidencias-filter">
-            <Filter size={12} />
-            <select
-              className="incidencias-filter-select"
-              value={homeFacultad}
-              onChange={(e) => setHomeFacultad(e.target.value)}
-            >
-              {FACULTADES.map((f) => (
-                <option key={f} value={f}>{f}</option>
-              ))}
-            </select>
-            <span className="incidencias-count">{homeFilteredIssues.length} resultados</span>
-          </div>
-          {homeFilteredIssues.length === 0 ? (
-            <div style={{ color: 'var(--text-muted)', fontSize: '0.8125rem', padding: '0.5rem 0' }}>
-              Sin incidencias registradas.
-            </div>
-          ) : (
-            <table className="data-table">
-              <thead>
-                <tr>
-                  <th>ID</th>
-                  <th>Sector</th>
-                  <th>Tipo</th>
-                  <th>Estado</th>
-                  <th>Luxes</th>
-                </tr>
-              </thead>
-              <tbody>
-                {homeFilteredIssues.map(l => (
-                  <tr key={l.id}>
-                    <td style={{ fontFamily: 'var(--font-mono)' }}>{l.id}</td>
-                    <td>{l.facultad}</td>
-                    <td style={{ fontFamily: 'var(--font-mono)' }}>{l.tipo?.toUpperCase()}</td>
-                    <td>
-                      <span className={`badge ${l.estado?.toLowerCase() === 'no enciende' ? 'badge-danger' : l.estado?.toLowerCase() === 'dañado/parpadea' ? 'badge-warning' : 'badge-success'}`}>
-                        {l.estado}
-                      </span>
-                    </td>
-                    <td style={{ fontFamily: 'var(--font-mono)' }}>{l.luxes ?? 'N/A'}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          )}
-        </div>
-      </div>
-    </>
-  );
+  return <AnalyticsDashboard stats={stats} />;
 }
 
 export default function Dashboard() {
