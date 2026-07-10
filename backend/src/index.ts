@@ -1,6 +1,7 @@
 import express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
+import { createProxyMiddleware } from 'http-proxy-middleware';
 import { initializeApp, cert } from 'firebase-admin/app';
 import luminariasRouter from './routes/luminarias.routes.js';
 import usersRouter from './routes/users.routes.js';
@@ -36,6 +37,12 @@ app.get('/api/health', (_req, res) => {
 
 app.use('/api/luminarias', luminariasRouter);
 app.use('/api/users', usersRouter);
+
+const analyticsTarget = process.env.ANALYTICS_URL || 'http://localhost:5000';
+app.use('/analytics', createProxyMiddleware({
+  target: analyticsTarget,
+  changeOrigin: true,
+}));
 
 app.listen(port, () => {
   console.log(`Server running on port ${port}`);

@@ -1,0 +1,16 @@
+services:
+  - type: web
+    name: iluminarias-backend
+    runtime: image
+    plan: free
+    dockerfilePath: ./Dockerfile
+    dockerContext: .
+    envVars:
+      - key: PORT
+        value: "3001"
+      - key: FIREBASE_PROJECT_ID
+        value: iluminariasuce
+      - key: FIREBASE_CLIENT_EMAIL
+        fromSecret: FIREBASE_CLIENT_EMAIL
+      - key: FIREBASE_PRIVATE_KEY
+        fromSecret: FIREBASE_PRIVATE_KEY

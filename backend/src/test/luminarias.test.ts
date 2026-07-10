@@ -23,10 +23,10 @@ vi.mock('firebase-admin/auth', () => ({
 }));
 
 describe('luminarias.controller', () => {
-  let ctrl: typeof import('../controllers/luminarias.controller');
+  let ctrl: typeof import('../controllers/luminarias.controller.js');
 
   beforeEach(async () => {
-    ctrl = await import('../controllers/luminarias.controller');
+    ctrl = await import('../controllers/luminarias.controller.js');
   });
 
   function mockRes() {

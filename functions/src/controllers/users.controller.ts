@@ -5,8 +5,8 @@ import { getAuth } from 'firebase-admin/auth';
 export async function listUsers(_req: AuthRequest, res: Response) {
   try {
     const auth = getAuth();
-    const listUsersResult = await auth.listUsers(1000);
-    const users = listUsersResult.users.map((u) => ({
+    const listResult = await auth.listUsers(1000);
+    const users = listResult.users.map((u) => ({
       uid: u.uid,
       email: u.email ?? '',
       displayName: u.displayName ?? '',
@@ -16,7 +16,7 @@ export async function listUsers(_req: AuthRequest, res: Response) {
       customClaims: u.customClaims ?? {},
     }));
     res.json(users);
-  } catch (err) {
+  } catch {
     res.status(500).json({ error: 'Error al listar usuarios' });
   }
 }
@@ -24,7 +24,7 @@ export async function listUsers(_req: AuthRequest, res: Response) {
 export async function getUser(req: AuthRequest, res: Response) {
   try {
     const auth = getAuth();
-    const uid = req.params.uid as string;
+    const uid = String(req.params.uid);
     const userRecord = await auth.getUser(uid);
     res.json({
       uid: userRecord.uid,
@@ -43,7 +43,7 @@ export async function getUser(req: AuthRequest, res: Response) {
 export async function updateUser(req: AuthRequest, res: Response) {
   try {
     const auth = getAuth();
-    const uid = req.params.uid as string;
+    const uid = String(req.params.uid);
     const { displayName, disabled, role } = req.body as {
       displayName?: string;
       disabled?: boolean;
@@ -76,7 +76,7 @@ export async function updateUser(req: AuthRequest, res: Response) {
 export async function deleteUser(req: AuthRequest, res: Response) {
   try {
     const auth = getAuth();
-    const uid = req.params.uid as string;
+    const uid = String(req.params.uid);
     await auth.deleteUser(uid);
     res.json({ message: 'Usuario eliminado' });
   } catch {

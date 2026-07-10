@@ -2,7 +2,9 @@ import json, os
 import pandas as pd
 import numpy as np
 
-DATA_PATH = os.path.join(os.path.dirname(__file__), '..', 'data', 'luminarias.json')
+_DATA_DIR = os.environ.get('ANALYTICS_DATA_DIR',
+                           os.path.join(os.path.dirname(__file__), '..', 'data'))
+DATA_PATH = os.path.join(_DATA_DIR, 'luminarias.json')
 
 def load_dataframe():
     with open(DATA_PATH, 'r', encoding='utf-8') as f:

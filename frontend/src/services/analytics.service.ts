@@ -1,8 +1,12 @@
-const API = '/analytics';
+const API = import.meta.env.VITE_ANALYTICS_URL || '/analytics';
 
 async function fetchJson(endpoint: string) {
   const res = await fetch(`${API}${endpoint}`);
-  if (!res.ok) throw new Error(`Analytics error: ${res.statusText}`);
+  if (!res.ok) throw new Error(`Analytics error (${res.status}): ${res.statusText}`);
+  const ct = res.headers.get('content-type') || '';
+  if (!ct.includes('application/json')) {
+    throw new Error('El servicio de análisis no está disponible en este momento');
+  }
   return res.json();
 }
 

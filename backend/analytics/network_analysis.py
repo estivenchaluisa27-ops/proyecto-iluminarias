@@ -6,7 +6,7 @@ import matplotlib.pyplot as plt
 import networkx as nx
 from loader import load_dataframe
 
-PLOTS_DIR = 'backend/analytics/plots'
+PLOTS_DIR = os.path.join(os.path.dirname(__file__), 'plots')
 
 def _haversine(lat1, lon1, lat2, lon2):
     R = 6371000

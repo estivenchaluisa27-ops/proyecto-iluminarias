@@ -1,0 +1,8 @@
+frontend/
+functions/
+.git
+node_modules
+**/__pycache__
+**/*.pyc
+**/plots/
+.DS_Store
