@@ -3,6 +3,7 @@ WORKDIR /build
 COPY backend/package*.json ./
 RUN npm ci
 COPY backend/ ./
+COPY shared/ /shared/
 RUN npm run build
 
 FROM python:3.12-slim
