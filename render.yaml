@@ -3,6 +3,7 @@ services:
     name: iluminarias-api
     runtime: node
     plan: free
+    rootDir: backend
     buildCommand: npm install && npm run build
     startCommand: npm start
     healthCheckPath: /api/health
@@ -23,4 +24,4 @@ services:
     runtime: docker
     plan: free
     dockerfilePath: ./backend/analytics/Dockerfile
-    dockerContext: ./backend/analytics
+    dockerContext: ./backend

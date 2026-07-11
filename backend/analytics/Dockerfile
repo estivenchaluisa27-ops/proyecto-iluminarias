@@ -2,12 +2,12 @@ FROM python:3.12
 
 WORKDIR /app
 
-COPY requirements.txt .
+COPY analytics/requirements.txt .
 RUN pip install --no-cache-dir --prefer-binary -r requirements.txt
 
-COPY . .
+COPY analytics/ .
 
-COPY ../data /data
+COPY data /data
 ENV ANALYTICS_DATA_DIR=/data
 
 EXPOSE 5000
