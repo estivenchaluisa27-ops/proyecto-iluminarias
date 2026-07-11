@@ -8,3 +8,4 @@ dist/
 **/plots/
 __pycache__/
 *.pyc
+.playwright-mcp/

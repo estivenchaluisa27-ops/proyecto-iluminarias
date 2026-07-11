@@ -1,16 +1,26 @@
 services:
   - type: web
-    name: iluminarias-backend
-    runtime: docker
+    name: iluminarias-api
+    runtime: node
     plan: free
-    dockerfilePath: ./Dockerfile
-    dockerContext: .
+    buildCommand: npm install && npm run build
+    startCommand: npm start
+    healthCheckPath: /api/health
     envVars:
       - key: PORT
         value: "3001"
+      - key: NODE_ENV
+        value: production
       - key: FIREBASE_PROJECT_ID
         value: iluminariasuce
       - key: FIREBASE_CLIENT_EMAIL
         sync: false
       - key: FIREBASE_PRIVATE_KEY
         sync: false
+
+  - type: web
+    name: iluminarias-analytics
+    runtime: docker
+    plan: free
+    dockerfilePath: ./backend/analytics/Dockerfile
+    dockerContext: ./backend/analytics
