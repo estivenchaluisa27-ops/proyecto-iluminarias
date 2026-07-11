@@ -1,7 +1,7 @@
 services:
   - type: web
     name: iluminarias-backend
-    runtime: image
+    runtime: docker
     plan: free
     dockerfilePath: ./Dockerfile
     dockerContext: .
@@ -11,6 +11,6 @@ services:
       - key: FIREBASE_PROJECT_ID
         value: iluminariasuce
       - key: FIREBASE_CLIENT_EMAIL
-        fromSecret: FIREBASE_CLIENT_EMAIL
+        sync: false
       - key: FIREBASE_PRIVATE_KEY
-        fromSecret: FIREBASE_PRIVATE_KEY
+        sync: false
