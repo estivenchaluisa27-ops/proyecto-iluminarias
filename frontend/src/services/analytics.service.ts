@@ -1,13 +1,22 @@
 const API = import.meta.env.VITE_ANALYTICS_URL || '/analytics';
 
+const cache = new Map<string, Promise<any>>();
+
 async function fetchJson(endpoint: string) {
-  const res = await fetch(`${API}${endpoint}`);
-  if (!res.ok) throw new Error(`Analytics error (${res.status}): ${res.statusText}`);
-  const ct = res.headers.get('content-type') || '';
-  if (!ct.includes('application/json')) {
-    throw new Error('El servicio de análisis no está disponible en este momento');
+  const url = `${API}${endpoint}`;
+  if (!cache.has(url)) {
+    cache.set(url, (async () => {
+      const res = await fetch(url);
+      if (!res.ok) throw new Error(`Analytics error (${res.status}): ${res.statusText}`);
+      const ct = res.headers.get('content-type') || '';
+      if (!ct.includes('application/json')) {
+        cache.delete(url);
+        throw new Error('El servicio de análisis no está disponible en este momento');
+      }
+      return res.json();
+    })());
   }
-  return res.json();
+  return cache.get(url)!;
 }
 
 export const analyticsService = {
