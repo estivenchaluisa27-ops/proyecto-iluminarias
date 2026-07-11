@@ -6,10 +6,14 @@ COPY backend/ ./
 COPY shared/ /shared/
 RUN npm run build
 
-FROM python:3.12-slim
+FROM python:3.12
 
 RUN apt-get update && apt-get install -y supervisor --no-install-recommends \
   && rm -rf /var/lib/apt/lists/*
+
+COPY backend/analytics/requirements.txt /tmp/requirements.txt
+RUN pip install --no-cache-dir --prefer-binary -r /tmp/requirements.txt \
+  && rm -f /tmp/requirements.txt
 
 ENV NODE_ENV=production
 ENV PORT=3001
@@ -23,8 +27,6 @@ COPY backend/data /app/backend/data
 COPY backend/supervisord.conf /etc/supervisor/conf.d/supervisord.conf
 
 WORKDIR /app/backend
-
-RUN pip install --no-cache-dir -r /app/backend/analytics/requirements.txt
 
 EXPOSE 3001
 
