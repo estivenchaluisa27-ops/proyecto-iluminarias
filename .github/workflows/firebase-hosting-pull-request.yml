@@ -26,7 +26,7 @@ jobs:
           VITE_FIREBASE_APP_ID: 1:741308647563:web:4932538ddf256fc1c1ac8e
           VITE_USE_FIREBASE_EMULATOR: "false"
           VITE_API_URL: https://iluminarias-api.onrender.com/api
-          VITE_ANALYTICS_URL: https://iluminarias-analytics.onrender.com
+          VITE_ANALYTICS_URL: https://iluminarias-analytics.onrender.com/analytics
       - uses: FirebaseExtended/action-hosting-deploy@v0
         with:
           repoToken: ${{ secrets.GITHUB_TOKEN }}
