@@ -1,4 +1,4 @@
-import io, base64, json
+import io, base64, json, os
 import numpy as np
 import matplotlib
 matplotlib.use('Agg')
