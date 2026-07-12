@@ -43,6 +43,10 @@ app.get('/api/health', (_req, res) => {
   res.json({ status: 'ok', message: 'Backend is running' });
 });
 
+app.get('/api/debug/sentry-test', () => {
+  throw new Error('[Sentry test] Error controlado desde backend ' + new Date().toISOString());
+});
+
 app.use('/api/luminarias', luminariasRouter);
 app.use('/api/users', usersRouter);
 
