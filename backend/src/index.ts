@@ -1,11 +1,20 @@
 import express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
+import * as Sentry from '@sentry/node';
 import { initializeApp, cert } from 'firebase-admin/app';
 import luminariasRouter from './routes/luminarias.routes.js';
 import usersRouter from './routes/users.routes.js';
 
 dotenv.config();
+
+if (process.env.SENTRY_DSN) {
+  Sentry.init({
+    dsn: process.env.SENTRY_DSN,
+    environment: process.env.NODE_ENV ?? 'development',
+    tracesSampleRate: process.env.NODE_ENV === 'production' ? 0.1 : 0,
+  });
+}
 
 try {
   if (process.env.FIREBASE_PRIVATE_KEY) {
@@ -36,6 +45,8 @@ app.get('/api/health', (_req, res) => {
 
 app.use('/api/luminarias', luminariasRouter);
 app.use('/api/users', usersRouter);
+
+Sentry.setupExpressErrorHandler(app);
 
 app.listen(port, () => {
   console.log(`Server running on port ${port}`);

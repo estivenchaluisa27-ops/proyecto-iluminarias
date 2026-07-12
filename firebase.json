@@ -1,4 +1,11 @@
 {
+  "firestore": {
+    "rules": "shared/firestore.rules"
+  },
+  "functions": {
+    "source": "functions",
+    "runtime": "nodejs20"
+  },
   "hosting": {
     "public": "frontend/dist",
     "ignore": [
