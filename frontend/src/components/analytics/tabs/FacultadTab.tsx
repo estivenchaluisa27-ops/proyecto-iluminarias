@@ -3,6 +3,7 @@ import { analyticsService } from '../../../services/analytics.service';
 import PlotlyChart from '../PlotlyChart';
 import StaticChart from '../StaticChart';
 import AltairChart from '../AltairChart';
+import ChartCard from '../ChartCard';
 
 export default function FacultadTab() {
   const [rankingFig, setRankingFig] = useState<any>(null);
@@ -43,40 +44,54 @@ export default function FacultadTab() {
   return (
     <>
       <div className="analytics-grid">
-        <div className="analytics-card full">
-          <div className="analytics-card-title">Ranking de Luxes Promedio por Facultad</div>
+        <ChartCard
+          full
+          title="Ranking de Luxes Promedio por Facultad"
+          description="Facultades ordenadas por luxes promedio. Las barras largas indican mayor iluminación; prioriza las más cortas."
+        >
           <PlotlyChart figure={rankingFig} loading={loading} height={500} />
-        </div>
+        </ChartCard>
       </div>
       <div className="analytics-grid">
-        <div className="analytics-card full">
-          <div className="analytics-card-title">Estado de Luminarias por Facultad</div>
+        <ChartCard
+          full
+          title="Estado de Luminarias por Facultad"
+          description="Composición de estados por facultad. Verde = funcionando, rojo = no funcionando, ámbar = dañado."
+        >
           <StaticChart src={stackedImg} loading={loading} alt="Stacked por facultad" />
-        </div>
+        </ChartCard>
       </div>
       <div className="analytics-grid">
-        <div className="analytics-card">
-          <div className="analytics-card-title">Treemap: Distribución por Facultad</div>
+        <ChartCard
+          title="Treemap: Distribución por Facultad"
+          description="Tamaño proporcional al total de luminarias por facultad. Color = % con medición de luxes (rojo = baja cobertura)."
+        >
           <PlotlyChart figure={treemapFig} loading={loading} height={400} />
-        </div>
-        <div className="analytics-card">
-          <div className="analytics-card-title">Radar por Facultad</div>
+        </ChartCard>
+        <ChartCard
+          title="Radar por Facultad"
+          description="Perfil multidimensional: total, %LED, %funciona, luxes y altura. Polígonos grandes = mejor equipamiento."
+        >
           <select className="analytics-select" value={facultadRadar} onChange={e => setFacultadRadar(e.target.value)}>
             <option value="">Todas las facultades</option>
             {facultades.map(f => <option key={f} value={f}>{f}</option>)}
           </select>
           <PlotlyChart figure={radarFig} loading={loading} height={400} />
-        </div>
+        </ChartCard>
       </div>
       <div className="analytics-grid">
-        <div className="analytics-card">
-          <div className="analytics-card-title">Adopción de LED por Facultad</div>
+        <ChartCard
+          title="Adopción de LED por Facultad"
+          description="Porcentaje de luminarias LED por facultad. Identifica facultades rezagadas en eficiencia energética."
+        >
           <PlotlyChart figure={ledFig} loading={loading} height={500} />
-        </div>
-        <div className="analytics-card">
-          <div className="analytics-card-title">Heatmap: Tipo vs Estado</div>
+        </ChartCard>
+        <ChartCard
+          title="Heatmap: Tipo vs Estado"
+          description="Frecuencia de cada combinación tipo-estado. Colores intensos = mayor cantidad en esa categoría."
+        >
           <AltairChart spec={linkedSpec} loading={loading} />
-        </div>
+        </ChartCard>
       </div>
     </>
   );

@@ -3,6 +3,7 @@ import { Lightbulb, Zap, LightbulbOff, Thermometer, BarChart3, PieChart } from '
 import { analyticsService } from '../../../services/analytics.service';
 import PlotlyChart from '../PlotlyChart';
 import StaticChart from '../StaticChart';
+import ChartCard from '../ChartCard';
 import type { KpiData } from '../AnalyticsDashboard';
 import type { LuminariaStats } from '../../../types/luminaria';
 
@@ -58,14 +59,18 @@ export default function ResumenTab({ stats }: Props) {
       </div>
 
       <div className="analytics-grid">
-        <div className="analytics-card">
-          <div className="analytics-card-title">Proporción LED vs Sodio</div>
+        <ChartCard
+          title="Proporción LED vs Sodio"
+          description="Proporción de luminarias LED versus Sodio en el campus. Indica el grado de adopción de tecnología eficiente."
+        >
           <PlotlyChart figure={donutFig} loading={loading} height={350} />
-        </div>
-        <div className="analytics-card">
-          <div className="analytics-card-title">Estado por Tipo de Luminaria</div>
+        </ChartCard>
+        <ChartCard
+          title="Estado por Tipo de Luminaria"
+          description="Cantidad de luminarias LED y Sodio en cada estado operativo. Permite comparar la confiabilidad entre tecnologías."
+        >
           <StaticChart src={countplotImg} loading={loading} alt="Countplot tipo x estado" />
-        </div>
+        </ChartCard>
       </div>
     </>
   );

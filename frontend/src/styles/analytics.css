@@ -27,7 +27,7 @@
   font-weight: 500;
   border-radius: 6px;
   cursor: pointer;
-  transition: background 0.15s, color 0.15s;
+  transition: background 0.2s ease, color 0.2s ease, transform 0.15s ease;
   white-space: nowrap;
   min-width: 0;
 }
@@ -35,6 +35,7 @@
 .analytics-tab:hover {
   background: var(--surface-elevated);
   color: var(--text-main);
+  transform: translateY(-1px);
 }
 
 .analytics-tab.active {
@@ -66,6 +67,13 @@
   padding: 1rem;
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
   overflow: hidden;
+  transition: box-shadow 0.2s ease, transform 0.2s ease, border-color 0.2s ease;
+}
+
+.analytics-card:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  transform: translateY(-2px);
+  border-color: var(--border-light);
 }
 
 .analytics-card-title {
@@ -77,7 +85,24 @@
   color: var(--text-muted);
   text-transform: uppercase;
   letter-spacing: 0.04em;
+  margin-bottom: 0.25rem;
+}
+
+.analytics-card-desc {
+  font-size: 0.6875rem;
+  font-weight: 400;
+  color: var(--text-secondary);
+  text-transform: none;
+  letter-spacing: normal;
+  line-height: 1.4;
   margin-bottom: 0.75rem;
+  opacity: 0.85;
+  transition: opacity 0.2s ease, color 0.2s ease;
+}
+
+.analytics-card:hover .analytics-card-desc {
+  opacity: 1;
+  color: var(--text-main);
 }
 
 .analytics-select {

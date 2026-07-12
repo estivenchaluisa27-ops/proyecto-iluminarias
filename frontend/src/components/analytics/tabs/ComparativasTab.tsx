@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { analyticsService } from '../../../services/analytics.service';
 import PlotlyChart from '../PlotlyChart';
 import StaticChart from '../StaticChart';
+import ChartCard from '../ChartCard';
 
 export default function ComparativasTab() {
   const [corrImg, setCorrImg] = useState<string | null>(null);
@@ -24,26 +25,36 @@ export default function ComparativasTab() {
   return (
     <>
       <div className="analytics-grid">
-        <div className="analytics-card">
-          <div className="analytics-card-title">Matriz de Correlación (Pearson)</div>
+        <ChartCard
+          title="Matriz de Correlación (Pearson)"
+          description="Correlaciones lineales entre variables numéricas. Valores cercanos a ±1 indican relación fuerte."
+        >
           <StaticChart src={corrImg} loading={loading} alt="Matriz correlación" />
-        </div>
-        <div className="analytics-card">
-          <div className="analytics-card-title">Scatter: Altura vs Luxes (estático)</div>
+        </ChartCard>
+        <ChartCard
+          title="Scatter: Altura vs Luxes (estático)"
+          description="Relación entre altura del poste y luxes. La línea roja muestra la tendencia; colores distinguen LED vs Sodio."
+        >
           <StaticChart src={scatterImg} loading={loading} alt="Scatter altura luxes" />
-        </div>
+        </ChartCard>
       </div>
       <div className="analytics-grid">
-        <div className="analytics-card full">
-          <div className="analytics-card-title">Scatter: Altura vs Luxes (interactivo)</div>
+        <ChartCard
+          full
+          title="Scatter: Altura vs Luxes (interactivo)"
+          description="Misma relación altura-luxes con exploración. Pasa el cursor para ver facultad y estado de cada punto."
+        >
           <PlotlyChart figure={scatterPlotly} loading={loading} height={450} />
-        </div>
+        </ChartCard>
       </div>
       <div className="analytics-grid">
-        <div className="analytics-card full">
-          <div className="analytics-card-title">Distribución de Estado por Grupo</div>
+        <ChartCard
+          full
+          title="Distribución de Estado por Grupo"
+          description="Mini gráficos por circuito eléctrico. Picos en 'no enciende' señalan fallas eléctricas localizadas."
+        >
           <StaticChart src={sparklinesImg} loading={loading} alt="Sparklines grupos" />
-        </div>
+        </ChartCard>
       </div>
     </>
   );

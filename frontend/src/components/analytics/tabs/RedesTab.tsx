@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { analyticsService } from '../../../services/analytics.service';
 import PlotlyChart from '../PlotlyChart';
 import StaticChart from '../StaticChart';
+import ChartCard from '../ChartCard';
 
 export default function RedesTab() {
   const [grafoPng, setGrafoPng] = useState<string | null>(null);
@@ -31,9 +32,11 @@ export default function RedesTab() {
   return (
     <>
       <div className="analytics-grid">
-        <div className="analytics-card">
-          <div className="analytics-card-title">
-            Red de Proximidad (estático)
+        <ChartCard
+          title="Red de Proximidad (estático)"
+          description="Grafo de luminarias cercanas. Verde = funcionando, rojo = no funcionando. Racimos rojos indican fallas localizadas."
+        >
+          <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: '0.5rem' }}>
             <select className="analytics-select-sm" value={threshold} onChange={e => setThreshold(Number(e.target.value))}>
               <option value={30}>30m</option>
               <option value={50}>50m</option>
@@ -41,15 +44,20 @@ export default function RedesTab() {
             </select>
           </div>
           <StaticChart src={grafoPng} loading={loading} alt="Grafo proximidad" />
-        </div>
-        <div className="analytics-card">
-          <div className="analytics-card-title">Red de Proximidad (interactivo)</div>
+        </ChartCard>
+        <ChartCard
+          title="Red de Proximidad (interactivo)"
+          description="Mismo grafo con exploración interactiva. Pasa el cursor para ver ID, facultad y estado de cada luminaria."
+        >
           <PlotlyChart figure={grafoPlotly} loading={loading} height={500} />
-        </div>
+        </ChartCard>
       </div>
       <div className="analytics-grid">
-        <div className="analytics-card full">
-          <div className="analytics-card-title">Comunidades Detectadas</div>
+        <ChartCard
+          full
+          title="Comunidades Detectadas"
+          description="Clusters de luminarias cercanas detectados automáticamente. Alta tasa de falla = prioridad de mantenimiento."
+        >
           {loadingCom ? (
             <div className="chart-loading">Analizando comunidades...</div>
           ) : comunidades ? (
@@ -59,7 +67,7 @@ export default function RedesTab() {
                 <span className="comunidad-value">{comunidades.total_comunidades}</span>
               </div>
               <div className="comunidad-stat">
-                <span className="comunidad-label">Pares &lt;{threshold}m</span>
+                <span className="comunidad-label">{'Pares <'}{threshold}m</span>
                 <span className="comunidad-value">{comunidades.total_pares_menor_50m}</span>
               </div>
               <div className="comunidad-stat">
@@ -96,7 +104,7 @@ export default function RedesTab() {
               </tbody>
             </table>
           )}
-        </div>
+        </ChartCard>
       </div>
     </>
   );

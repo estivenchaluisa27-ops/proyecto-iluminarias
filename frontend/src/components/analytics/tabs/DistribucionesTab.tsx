@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { analyticsService } from '../../../services/analytics.service';
 import PlotlyChart from '../PlotlyChart';
 import StaticChart from '../StaticChart';
+import ChartCard from '../ChartCard';
 
 export default function DistribucionesTab() {
   const [histImg, setHistImg] = useState<string | null>(null);
@@ -26,30 +27,43 @@ export default function DistribucionesTab() {
   return (
     <>
       <div className="analytics-grid">
-        <div className="analytics-card full">
-          <div className="analytics-card-title">Distribución de Luxes (estático + KDE)</div>
+        <ChartCard
+          full
+          title="Distribución de Luxes (estático + KDE)"
+          description="Distribución de los niveles de iluminación (luxes). La curva azul estima la densidad de los datos."
+        >
           <StaticChart src={histImg} loading={loading} alt="Histograma luxes" />
-        </div>
-        <div className="analytics-card full">
-          <div className="analytics-card-title">Distribución de Luxes (interactivo)</div>
+        </ChartCard>
+        <ChartCard
+          full
+          title="Distribución de Luxes (interactivo)"
+          description="Misma distribución de luxes con exploración interactiva. Pasa el cursor sobre las barras para ver conteos exactos."
+        >
           <PlotlyChart figure={histPlotly} loading={loading} height={400} />
-        </div>
+        </ChartCard>
       </div>
       <div className="analytics-grid">
-        <div className="analytics-card">
-          <div className="analytics-card-title">Boxplot: Luxes por Tipo</div>
+        <ChartCard
+          title="Boxplot: Luxes por Tipo"
+          description="Comparación de luxes entre LED y Sodio. La caja muestra mediana y rango intercuartílico; los puntos son valores atípicos."
+        >
           <StaticChart src={boxplotTipo} loading={loading} alt="Boxplot por tipo" />
-        </div>
-        <div className="analytics-card">
-          <div className="analytics-card-title">Violin Plot: Luxes por Tipo y Estado</div>
+        </ChartCard>
+        <ChartCard
+          title="Violin Plot: Luxes por Tipo y Estado"
+          description="Densidad de luxes por tipo y estado operativo. Revela si las luminarias dañadas tienen lecturas erráticas o bajas."
+        >
           <StaticChart src={violin} loading={loading} alt="Violin plot" />
-        </div>
+        </ChartCard>
       </div>
       <div className="analytics-grid">
-        <div className="analytics-card full">
-          <div className="analytics-card-title">Curva de Distribución Acumulada (ECDF)</div>
+        <ChartCard
+          full
+          title="Curva de Distribución Acumulada (ECDF)"
+          description="Distribución acumulada de luxes. Muestra qué porcentaje de luminarias está por debajo de cada nivel de iluminación."
+        >
           <StaticChart src={ecdf} loading={loading} alt="ECDF" />
-        </div>
+        </ChartCard>
       </div>
     </>
   );
