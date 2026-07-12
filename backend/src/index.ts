@@ -9,19 +9,11 @@ import usersRouter from './routes/users.routes.js';
 dotenv.config();
 
 if (process.env.SENTRY_DSN) {
-  console.log('Sentry DSN found, initializing...');
-  try {
-    Sentry.init({
-      dsn: process.env.SENTRY_DSN,
-      environment: process.env.NODE_ENV ?? 'development',
-      tracesSampleRate: process.env.NODE_ENV === 'production' ? 0.1 : 0,
-    });
-    console.log('Sentry initialized successfully');
-  } catch (err) {
-    console.error('Sentry init failed:', err);
-  }
-} else {
-  console.log('SENTRY_DSN not set — skipping Sentry init');
+  Sentry.init({
+    dsn: process.env.SENTRY_DSN,
+    environment: process.env.NODE_ENV ?? 'development',
+    tracesSampleRate: process.env.NODE_ENV === 'production' ? 0.1 : 0,
+  });
 }
 
 try {
@@ -48,16 +40,7 @@ app.use(cors());
 app.use(express.json());
 
 app.get('/api/health', (_req, res) => {
-  res.json({
-    status: 'ok',
-    message: 'Backend is running',
-    sentry: !!process.env.SENTRY_DSN,
-    nodeEnv: process.env.NODE_ENV,
-  });
-});
-
-app.get('/api/debug/sentry-test', () => {
-  throw new Error('[Sentry test] Error controlado desde backend ' + new Date().toISOString());
+  res.json({ status: 'ok', message: 'Backend is running' });
 });
 
 app.use('/api/luminarias', luminariasRouter);
