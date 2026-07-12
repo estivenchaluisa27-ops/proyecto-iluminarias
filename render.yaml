@@ -19,7 +19,7 @@ services:
       - key: FIREBASE_PRIVATE_KEY
         sync: false
       - key: SENTRY_DSN
-        sync: false
+        value: https://2b26f073abb42cbd3d0ad97e42c11348@o4511719666876416.ingest.us.sentry.io/4511719760592896
 
   - type: web
     name: iluminarias-analytics
