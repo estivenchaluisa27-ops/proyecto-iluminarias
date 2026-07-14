@@ -1,0 +1,220 @@
+- generic [ref=e1]:
+  - generic [ref=e2]:
+    - generic [ref=e3]:
+      - banner [ref=e4]:
+        - generic [ref=e5]:
+          - link [ref=e7] [cursor=pointer]:
+            - /url: /
+            - img "Render" [ref=e8]
+          - button "S Stiven's workspace" [ref=e12] [cursor=pointer]:
+            - generic [ref=e13]:
+              - generic [ref=e14]: S
+              - generic "Stiven's workspace" [ref=e15]
+        - generic [ref=e20]:
+          - navigation [ref=e21]:
+            - list [ref=e22]:
+              - listitem [ref=e23]:
+                - link "iluminarias-api" [ref=e681] [cursor=pointer]:
+                  - /url: /web/srv-d98s1kfaqgkc73duqlhg
+                - button [ref=e685] [cursor=pointer]
+          - button "Search Ctrl + K" [ref=e35] [cursor=pointer]:
+            - text: Search
+            - generic [ref=e39]:
+              - generic [ref=e42]: Ctrl
+              - generic [ref=e43]: +
+              - generic [ref=e44]: K
+              - generic [ref=e45]: K
+        - generic [ref=e46]:
+          - button "New" [ref=e48] [cursor=pointer]
+          - button "Upgrade" [ref=e54] [cursor=pointer]
+          - button [ref=e60] [cursor=pointer]:
+            - img "Help" [ref=e61]
+          - button "e" [ref=e66] [cursor=pointer]
+      - generic [ref=e69]:
+        - navigation [ref=e70]:
+          - separator [ref=e71]
+          - generic [ref=e72]:
+            - generic [ref=e73]:
+              - link "Dashboard" [ref=e74] [cursor=pointer]:
+                - /url: /
+              - generic [ref=e78]: iluminarias-api
+            - generic [ref=e82]:
+              - list [ref=e83]:
+                - listitem [ref=e84]:
+                  - link "Events" [ref=e85] [cursor=pointer]:
+                    - /url: /web/srv-d98s1kfaqgkc73duqlhg/events
+                - listitem [ref=e94]:
+                  - link "Settings" [ref=e95] [cursor=pointer]:
+                    - /url: /web/srv-d98s1kfaqgkc73duqlhg/settings
+              - generic [ref=e100]:
+                - generic [ref=e101]: Monitor
+                - list "Monitor" [ref=e102]:
+                  - listitem [ref=e103]:
+                    - link "Logs" [ref=e104] [cursor=pointer]:
+                      - /url: /web/srv-d98s1kfaqgkc73duqlhg/logs
+                  - listitem [ref=e111]:
+                    - link "Metrics" [ref=e112] [cursor=pointer]:
+                      - /url: /web/srv-d98s1kfaqgkc73duqlhg/metrics
+              - generic [ref=e116]:
+                - generic [ref=e117]: Manage
+                - list "Manage" [ref=e118]:
+                  - listitem [ref=e119]:
+                    - link "Environment" [ref=e120] [cursor=pointer]:
+                      - /url: /web/srv-d98s1kfaqgkc73duqlhg/env
+                  - listitem [ref=e126]:
+                    - link "Shell" [ref=e127] [cursor=pointer]:
+                      - /url: /web/srv-d98s1kfaqgkc73duqlhg/shell
+                      - generic [ref=e132]:
+                        - generic [ref=e133]: Shell
+                        - status [ref=e136]
+                  - listitem [ref=e139]:
+                    - link "Scaling" [ref=e140] [cursor=pointer]:
+                      - /url: /web/srv-d98s1kfaqgkc73duqlhg/scaling
+                      - generic [ref=e146]:
+                        - generic [ref=e147]: Scaling
+                        - status [ref=e150]
+                  - listitem [ref=e153]:
+                    - link "Previews" [ref=e154] [cursor=pointer]:
+                      - /url: /web/srv-d98s1kfaqgkc73duqlhg/previews
+                  - listitem [ref=e160]:
+                    - link "Disk" [ref=e161] [cursor=pointer]:
+                      - /url: /web/srv-d98s1kfaqgkc73duqlhg/disks
+                      - generic [ref=e167]:
+                        - generic [ref=e168]: Disk
+                        - status [ref=e171]
+                  - listitem [ref=e174]:
+                    - link "One-Off Jobs" [ref=e175] [cursor=pointer]:
+                      - /url: /web/srv-d98s1kfaqgkc73duqlhg/jobs
+                      - generic [ref=e182]:
+                        - generic [ref=e183]: One-Off Jobs
+                        - status [ref=e186]
+          - generic [ref=e190]:
+            - button "Collapse items" [expanded] [ref=e191] [cursor=pointer]
+            - list "Footer navigation" [ref=e194]:
+              - listitem [ref=e195]:
+                - link "Changelog" [ref=e196] [cursor=pointer]:
+                  - /url: https://render.com/changelog
+              - listitem [ref=e203]:
+                - link "Invite a friend" [ref=e204] [cursor=pointer]:
+                  - /url: /invites
+              - listitem [ref=e208]:
+                - button "Contact support" [ref=e209] [cursor=pointer]
+            - link "Render Status" [ref=e216] [cursor=pointer]:
+              - /url: https://status.render.com
+        - generic [ref=e221]:
+          - banner [ref=e223]:
+            - generic [ref=e224]:
+              - generic [ref=e225]: Web Service
+              - generic [ref=e229]:
+                - heading "iluminarias-api Node Free Upgrade your instance Blueprint managed" [level=1] [ref=e231]:
+                  - generic [ref=e232]: iluminarias-api
+                  - generic [ref=e233]:
+                    - generic [ref=e234]: Node
+                    - link "Free" [ref=e235] [cursor=pointer]:
+                      - /url: /web/srv-d98s1kfaqgkc73duqlhg/plan
+                    - link "Upgrade your instance" [ref=e237] [cursor=pointer]:
+                      - /url: /web/srv-d98s1kfaqgkc73duqlhg/plan
+                    - link "Blueprint managed" [ref=e243] [cursor=pointer]:
+                      - /url: /blueprint/exs-d98r4467r5hc73a9jmdg
+                - generic [ref=e251]:
+                  - button "Connect" [ref=e252] [cursor=pointer]
+                  - button "Manual Deploy" [ref=e256] [cursor=pointer]
+            - generic [ref=e262]:
+              - generic [ref=e264]:
+                - generic [ref=e265]: "Service ID:"
+                - generic "Service ID:" [ref=e266]:
+                  - generic [ref=e267]: srv-d98s1kfaqgkc73duqlhg
+                  - button "Copy" [ref=e270] [cursor=pointer]
+              - generic [ref=e275]:
+                - img "GitHub" [ref=e277]
+                - link "estivenchaluisa27-ops / proyecto-iluminarias main" [ref=e279] [cursor=pointer]:
+                  - /url: https://github.com/estivenchaluisa27-ops/proyecto-iluminarias/tree/main
+                  - generic [ref=e280]:
+                    - generic [ref=e281]: estivenchaluisa27-ops / proyecto-iluminarias
+                    - generic [ref=e284]: main
+              - generic "Copy" [ref=e286]:
+                - link "https://iluminarias-api.onrender.com" [ref=e288] [cursor=pointer]:
+                  - /url: https://iluminarias-api.onrender.com
+                - button "Copy" [ref=e291] [cursor=pointer]
+          - main [ref=e295]:
+            - generic [ref=e688]:
+              - heading "Environment" [level=2] [ref=e689]
+              - button [ref=e690] [cursor=pointer]
+            - generic [ref=e694]:
+              - generic [ref=e696]:
+                - generic [ref=e699]:
+                  - heading "Environment Variables" [level=4] [ref=e701]
+                  - generic [ref=e702]:
+                    - text: Set environment-specific config and secrets (such as API keys), then read those values from your code.
+                    - link "Learn more." [ref=e703] [cursor=pointer]:
+                      - /url: https://render.com/docs/configure-environment-variables
+                - generic [ref=e716]:
+                  - table [ref=e717]:
+                    - rowgroup [ref=e718]:
+                      - row "Key Value Delete" [ref=e816]:
+                        - columnheader "Key" [ref=e720]
+                        - columnheader "Value" [ref=e721]
+                        - columnheader "Delete" [ref=e817]
+                    - rowgroup [ref=e722]:
+                      - row "Key FIREBASE_PROJECT_ID Value • • • • • • • • • • • • Show secret Delete" [ref=e819]:
+                        - rowheader "Key FIREBASE_PROJECT_ID" [ref=e724]
+                        - cell "Value • • • • • • • • • • • • Show secret" [ref=e730]
+                        - cell "Delete" [ref=e820]
+                      - row "Key NODE_ENV Value • • • • • • • • • • • • Show secret Delete" [ref=e827]:
+                        - rowheader "Key NODE_ENV" [ref=e741]
+                        - cell "Value • • • • • • • • • • • • Show secret" [ref=e747]
+                        - cell "Delete" [ref=e828]
+                      - row "Key PORT Value • • • • • • • • • • • • Show secret Delete" [ref=e835]:
+                        - rowheader "Key PORT" [ref=e758]
+                        - cell "Value • • • • • • • • • • • • Show secret" [ref=e764]
+                        - cell "Delete" [ref=e836]
+                      - row "Key Value Generate Delete" [ref=e862]:
+                        - rowheader "Key" [ref=e863]
+                        - cell "Value Generate" [ref=e869]
+                        - cell "Delete" [ref=e882]
+                  - generic [ref=e843]:
+                    - generic [ref=e845]:
+                      - button "Add variable" [ref=e846] [cursor=pointer]
+                      - button "More options" [ref=e850] [cursor=pointer]
+                    - generic [ref=e854]:
+                      - generic [ref=e855]:
+                        - button "Save, rebuild, and deploy" [ref=e856] [cursor=pointer]
+                        - button "Choose an option" [ref=e857] [cursor=pointer]
+                      - button "Cancel" [ref=e861] [cursor=pointer]
+              - generic [ref=e775]:
+                - generic [ref=e778]:
+                  - heading "Secret Files" [level=4] [ref=e780]
+                  - generic [ref=e782]:
+                    - generic [ref=e783]:
+                      - text: Store plaintext files containing secret data (such as a
+                      - code [ref=e784]: .env
+                      - text: file or a private key).
+                    - generic [ref=e785]:
+                      - text: Access during builds and at runtime from your app's root, or from
+                      - code [ref=e786]: /etc/secrets/<filename>
+                      - text: .
+                - generic [ref=e791]:
+                  - button "Add file" [ref=e792] [cursor=pointer]
+                  - button "More options" [ref=e796] [cursor=pointer]
+              - generic [ref=e801]:
+                - generic [ref=e804]:
+                  - heading "Linked Environment Groups" [level=4] [ref=e806]
+                  - generic [ref=e807]: Environment groups are collections of environment variables and secret files that you can share across multiple services.
+                - generic [ref=e810]:
+                  - generic [ref=e811]: No environment groups available to link.
+                  - link "New Environment Group" [ref=e812] [cursor=pointer]:
+                    - /url: /new/env-group
+    - generic:
+      - generic:
+        - generic: "0 services selected:"
+        - generic:
+          - generic:
+            - button:
+              - generic: Move
+      - generic:
+        - separator
+        - generic:
+          - generic:
+            - button
+  - iframe [ref=e680]:
+    

@@ -1,0 +1,11 @@
+- generic [ref=f4e5]:
+  - generic [ref=f4e6]:
+    - heading "Crear cuenta" [level=2] [ref=f4e7]
+    - paragraph [ref=f4e8]: Reporta y consulta el estado de la iluminación
+    - generic [ref=f4e9]:
+      - generic [ref=f4e10]:
+        - textbox "Nombre" [ref=f4e15]
+        - textbox "Correo Electrónico" [ref=f4e20]
+        - textbox "Contraseña" [ref=f4e25]
+      - button "Crear cuenta" [ref=f4e26] [cursor=pointer]
+  - heading "oIniciar sesión" [level=2] [ref=f4e29] [cursor=pointer]

@@ -1,0 +1,186 @@
+Reporte Completo de MCPs — Estado, Capacidades, Errores y Oportunidades
+Resumen Ejecutivo
+De 9 MCPs configurados, 7 funcionan correctamente, 1 está caído (Open Design), y 1 tiene errores de schema (varias tools de Firebase). Encontré 6 errores concretos y 11 oportunidades de mejora de permisos/uso. De los 7 MCPs propuestos, 3 ya existen como oficiales y son instalables hoy.
+1. Render MCP
+Aspecto	Detalle
+Estado	Funcional
+Config	node C:\Users\HP VICTUS\Documents\render-mcp.js (custom)
+Pruebas exitosas	list_services (2 servicios), get_deploys (5 deploys), get_service (detail)
+Datos descubiertos	2 servicios activos: iluminarias-api (Node, free, Oregon) y iluminarias-analytics (Docker, free, Oregon). Deploy más reciente: commit c687b73, estado live. 3 deploys previos fallidos (update_failed, build_failed).
+Errores encontrados
+- manage_env_vars con array vacío → Error 400: invalid JSON. El servidor MCP no valida que envVars sea un array no vacío antes de enviarlo a la API de Render. Workaround: siempre pasar al menos una variable.
+Oportunidades de mejora
+- No expone manage_domains: El tool existe pero no se pudo probar porque la API requiere un dominio. Si tu backend necesita dominio custom, el tool está listo.
+- No expone trigger_deploy: El MCP no tiene un tool para forzar deploy sin commit. Render lo soporta vía API pero el MCP custom no lo implementa.
+- No expone get_logs: Render tiene un endpoint de logs de deploy pero el MCP no lo expone. Sería crítico para debuggear los 3 deploys fallidos.
+- Re commanders disponibles: create_service, deploy_service, delete_service, manage_env_vars, manage_domains — todos funcionales en el schema.
+2. Firebase MCP #1 (lab-redes-turnos) y #2 (iluminariasuce)
+Aspecto	Detalle
+Estado	Parcialmente funcional — errores de schema en tools que retornan arrays
+Config	npx firebase-tools experimental:mcp con env FIREBASE_PROJECT
+Pruebas exitosas	get_environment, list_projects (4 proyectos), get_project, get_sdk_config (web), firestore_list_collections (coleccion luminarias), firestore_get_database, firestore_get_security_rules, firestore_validate_security_rules (OK), firestore_get_database
+Datos descubiertos	Proyecto iluminariasuce activo, Firestore en nam5, free tier, edition STANDARD, database (default), sin PITR, sin delete protection. Reglas de Firestore abiertas con expiración 2026-07-22.
+Errores encontrados (6 errores)
+1. firebase_list_apps → Error: Invalid tools/call result: expected record, received array. El schema del MCP define el resultado como objeto pero retorna array. Root cause: bug de firebase-tools en el output schema del MCP.
+2. auth_get_users → Mismo error: expected record, received array. El tool interna retorna un array de usuarios pero el schema espera un objeto.
+3. functions_list_functions → Mismo error: expected record, received array. Igual root cause.
+4. firestore_list_documents → Error: data/documents/0/fields/etiqueta/nullValue must be string. El campo etiqueta en Firestore tiene valor null y el schema del MCP no acepta nullValue como tipo válido en la posición esperada. Root cause: bug en el output schema que no maneja NULL_VALUE enum correctamente.
+5. firestore_query_collection → Error 400: read_time cannot be in the future. El MCP pasa un timestamp futuro por defecto. Workaround: omitir filtros que dependen de read_time.
+6. Configuración duplicada: Ambos servers Firebase apuntan al mismo proyecto iluminariasuce (el env FIREBASE_PROJECT=lab-redes-turnos del primer server es ignorado porque firebase.json override a iluminariasuce). Impacto: el MCP #1 es redundante.
+Oportunidades de mejora
+- Firebase Apps no registradas: Detected App IDs: <NONE>. Necesitas crear una Web App en Firebase para desbloquear hosting deploys y SDK config automático.
+- Billing no habilitado: Billing Enabled: No. Sin billing no puedes usar Cloud Functions, Cloud Storage (post free tier), ni PITR.
+- Reglas de Firestore peligrosamente abiertas: allow read, write: if request.time < timestamp.date(2026, 7, 22) — se bloquearán el 22 de julio (11 días). Hay que escribirlas antes.
+- firestore_create_index disponible: La coleccion luminarias necesita indices para queries por estado. El tool existe y funciona.
+- firebase_create_app disponible: Puedes crear la Web App faltante via MCP.
+- MCP #1 redundante: Eliminar el server firebase o cambiarle el FIREBASE_PROJECT a lab-redes-turnos real (crear directorio sin firebase.json que override).
+3. Open Design MCP
+Aspecto	Detalle
+Estado	Caído
+Config	npx @spec-ade/open-design mcp
+Error	cannot reach the Open Design daemon at http://127.0.0.1:7456. Is it running? Start it with pnpm tools-dev.
+Causa
+El daemon de Open Design no está corriendo. El MCP server es solo un puente al daemon local.
+Oportunidades de mejora
+- Reiniciar el daemon: cd C:\Users\HP VICTUS\Documents\...\open-design && pnpm tools-dev (o el comando equivalente) para revivir el MCP.
+- 15+ tools disponibles一旦 revivido: create_artifact, write_file, start_run (generación de diseño), list_projects, get_artifact, etc.
+- Si no usas Open Design para diseño, considera deshabilitar el MCP para reducir overhead de inicio.
+4. Playwright Browser MCP
+Aspecto	Detalle
+Estado	Funcional
+Config	npx -y @playwright/mcp@latest
+Pruebas exitosas	navigate (https://iluminarias-api.onrender.com/api/health (https://iluminarias-api.onrender.com/api/health)), snapshot (capturó JSON response {"status":"ok","message":"Backend is running"})
+Datos descubiertos
+- La API en Render responde 503 inicial (Render free tier spin-up) → luego 200 con {"status":"ok"} tras warm-up.
+Oportunidades de mejora
+- browser_console_messages no probado: Permite capturar errores JS del frontend — crítico para debuggear el bundle >5MB.
+- browser_evaluate no probado: Permite ejecutar JS en el contexto de la página — útil para inspeccionar el bundle size en runtime.
+- browser_network_requests no probado: Permite ver todas las requests HTTP del frontend — útil para auditar llamadas a la API.
+- Recomendado: usar browser_navigate a https://iluminariasuce.web.app (Firebase Hosting) para probar el frontend real y capturar errores de consola.
+5. tutomatch-db MCP
+Aspecto	Detalle
+Estado	Funcional
+Config	npx @modelcontextprotocol/server-postgres postgresql://sch:20042705@localhost:5432/tutomatch
+Pruebas exitosas	query (SELECT 1 AS test → [{"test":1}])
+Datos descubiertos
+- Conexión exitosa a PostgreSQL local. DB tutomatch accesible.
+Oportunidades de mejora
+- Read-only garantizado: El server de Postgres MCP es read-only — seguro para queries.
+- No expone schema inspection: Podrías usar query para explorar el schema (SELECT table_name FROM information_schema.tables WHERE table_schema='public').
+- Password en texto plano en config: La URI tiene sch:20042705. Considera usar env vars en el config si compartes el archivo.
+6. tutomatch-video MCP
+Aspecto	Detalle
+Estado	Parcialmente funcional — el path configurado no existe
+Config	node C:\Users\HP VICTUS\Documents\NetBeansProjects\remotion-tutomatch\tutomatch-video-mcp\dist\index.js
+Prueba	get_project_info → No se encontro package.json en C:\Users\HP VICTUS\Documents\NetBeansProjects\remotion-tutomatch
+Causa
+El directorio del proyecto Remotion no contiene un package.json — probablemente el proyecto fue movido, renombrado, o el path es incorrecto. El MCP server arranca (correctamente) pero el path del proyecto pasado por parámetro no apunta al proyecto correcto.
+Oportunidades de mejora
+- Verificar path: Buscar el proyecto Remotion en el filesystem (C:\Users\HP VICTUS\Documents\NetBeansProjects\).
+- 3 tools disponibles: get_project_info, list_compositions, render_promo_video — todas dependen de un path válido.
+- Si no usas Remotion: Considera deshabilitar este MCP para reducir overhead.
+7. codebase-memory MCP
+Aspecto	Detalle
+Estado	Totalmente funcional
+Config	codebase-memory-mcp.exe (binario local)
+Pruebas exitosas	list_projects (4 proyectos indexados), get_architecture (458 nodos, 779 edges, 12 clusters), search_graph (29 resultados BM25), query_graph (cypher: 4 funciones con complexity >5), trace_path (inbound callers de getAll: 7 callers en 2 hops)
+Datos descubiertos del proyecto iluminarias
+- 46 archivos TS, 8 CSS, 3 HTML, 2 Python, 2 JS, 2 YAML
+- 3 caperas arquitectónicas: api (rutas), core (src, fan-in 4), entry (mapeo_luminarias, excel_to_json)
+- 12 clusters detectados (frontend, maps, backend, etc.)
+- Hotspots: loadData (fan-in 6), useAuth (fan-in 5), getAll (fan-in 5)
+- 18 rutas HTTP mapeadas
+- Función más compleja: crear_mapa_luminarias (complexity 15)
+- Funciones complejas: UsersPage (11), usePrediction (8), reducer (6)
+Oportunidades de mejora
+- detect_changes no probado: Detecta cambios desde un branch base — crítico para PR review.
+- trace_path en data_flow mode: Permite trazar propagación de datos — útil para auditar flujos de auth.
+- manage_adr disponible: Architecture Decision Records — útil para documentar decisiones del proyecto.
+- ingest_traces disponible: Permite enriquecer el grafo con runtime traces — combina con Playwright para trazas end-to-end.
+- Re-indexar tras cambios: El proyecto tiene 458 nodos — asegúrate de re-indexar tras el último commit para que el grafo esté actualizado.
+8. Iconify MCP
+Aspecto	Detalle
+Estado	Funcional
+Config	node C:\Users\HP VICTUS\Documents\iconify-mcp\index.js (custom)
+Pruebas exitosas	obtener_icono_svg con query home → SVG retornado correctamente
+Oportunidades de mejora
+- Solo 1 tool disponible: obtener_icono_svg. El MCP ahora mismo es unalookup de iconos.
+- No expone búsqueda por colección: Podría ampliarse para buscar en colecciones específicas (Material Icons, Heroicons, etc.).
+- No expone listado de colecciones: Podría listar colecciones disponibles en Iconify.
+- Usado infrecuentemente: Si el frontend usa iconos via otra lib (Leaflet div icons probablemente), este MCP puede ser removido.
+MCPs Propuestos — Análisis de Viabilidad
+1. GitHub MCP — Oficial, instalable hoy
+Aspecto	Detalle
+Repositorio	github/github-mcp-server (31.4k stars, oficial de GitHub)
+Modo	Remote (HTTP, sin Docker) o Local (Docker PAT)
+Toolsets disponibles	repos, issues, pull_requests, actions, code_security, dependabot, discussions, notifications, orgs, projects, secret_protection, security_advisories, stargazers, users, code_quality, copilot, copilot_spaces
+Config para OpenCode	Remote: {"type":"http","url":"https://api.githubcopilot.com/mcp/"} con OAuth o PAT
+Relevancia para iluminarias	Alta — tu repo estivenchaluisa27-ops/proyecto-iluminarias tiene GitHub Actions (firebase-hosting-merge.yml, firebase-hosting-pull-request.yml). Podrías ver runs, logs de CI, crear PRs, gestionar issues sin gh CLI.
+Permiso necesario	PAT scope repo + read:org
+2. Sentry MCP — Oficial, instalable hoy
+Aspecto	Detalle
+Repositorio	getsentry/sentry-mcp (767 stars, oficial de Sentry)
+Modo	Remote (mcp.sentry.dev) o stdio (npx @sentry/mcp-server)
+Tools	search_events, search_issues, inspect, triage, Seer (AI-powered)
+Requisito	Sentry account + User Auth Token (scopes: org:read, project:read, project:write, team:read, team:write, event:write)
+Relevancia para iluminarias	Media — necesitas integrar Sentry SDK en el frontend/backend primero. Una vez hecho, el MCP da acceso a traces/crashes directamente.
+LLM requerido	Las tools de search AI requieren OpenAI/Anthropic/OpenRouter API key
+3. Docker MCP Gateway — Oficial, instalable hoy
+Aspecto	Detalle
+Repositorio	docker/mcp-gateway (1.5k stars, oficial de Docker)
+Modo	CLI plugin docker mcp — no es un MCP server tradicional, es un gateway que orquesta servers en contenedores
+Relevancia para iluminarias	Baja-Media — iluminarias-analytics usa Docker en Render. Localmente podrías inspeccionar/build images del analytics service. Pero el MCP Gateway es más un orquestador de MCPs que un tool de Docker directamente.
+Req	Docker Desktop 4.59+
+4. Google Cloud MCP (Cloud Run) — Oficial, instalable hoy
+Aspecto	Detalle
+Repositorio	GoogleCloudPlatform/cloud-run-mcp (621 stars, oficial de GCP)
+Modo	npx -y @google-cloud/cloud-run-mcp
+Tools	deploy-file-contents, list-services, get-service, get-service-log, deploy-local-folder, list-projects, create-project
+Relevancia para iluminarias	Media — Firebase corre sobre GCP. Si migras iluminarias-api o iluminarias-analytics de Render a Cloud Run, este MCP te permite deployar desde el agente. Pero tu infra actual está en Render, no GCP.
+Req	gcloud auth login + gcloud auth application-default login
+5. Lighthouse / PageSpeed MCP
+Aspecto	Detalle
+Estado	No existe un MCP oficial de Lighthouse. Hay implementaciones comunitarias pero no maduras.
+Alternativa	Usar Playwright MCP (ya instalado) para navegar al frontend + browser_network_requests para auditar recursos, + browser_evaluate para medir load time. O usar el skill /benchmark (gstack) que hace exactamente esto.
+Relevancia	Alta dado el bundle >5MB — pero se puede cubrir con Playwright + un skill gstack.
+6. Prisma / Sequelize MCP
+Aspecto	Detalle
+Estado	Prisma tiene un MCP experimental pero requiere migrar de Firestore a Postgres primero.
+Relevancia	Baja — actualmente usas Firestore, no SQL. Si migras a SQL, Prisma MCP sería útil.
+Alternativa actual	tutomatch-db MCP ya da access SQL read-only si necesitas migrar datos.
+Resumen de Errores Encontrados
+#	MCP	Tool	Error	Severidad
+1	Firebase	firebase_list_apps	expected record, received array	Alto — no puedes listar apps
+2	Firebase	auth_get_users	expected record, received array	Alto — no puedes ver usuarios
+3	Firebase	functions_list_functions	expected record, received array	Medio — no tienes CFs deployadas
+4	Firebase	firestore_list_documents	nullValue must be string	Alto — no puedes leer documentos
+5	Firebase	firestore_query_collection	read_time in the future (400)	Medio — queries con filtros fallan
+6	Open Design	todos	daemon not reachable	Total — MCP inutilizable
+7	tutomatch-video	get_project_info	package.json not found	Medio — path incorrecto
+8	Render	manage_env_vars (empty)	invalid JSON (400)	Bajo — solo con input inválido
+Nota sobre errores 1-5: Todos son bugs de firebase-tools en su implementación MCP (experimental:mcp). Los errores de schema (expected record, received array) sugieren que el output schema declarado no coincide con el output real. Reportar a firebase/firebase-tools en GitHub.
+Prioridad de Acción Recomendada
+Prioridad	Acción	Impacto
+P0	Reglas de Firestore expiran el 22 julio — escribirlas ahora	Sin reglas, toda la DB se bloquea
+P0	Reiniciar Open Design daemon o deshabilitar el MCP	MCP caído consume startup time
+P1	Instalar GitHub MCP (remote, sin Docker)	Desbloquea CI/CD visibility, PR mgmt
+P1	Reportar bugs de firebase-tools MCP en GitHub	Los 5 errores son bugs upstream
+P1	Verificar path de tutomatch-video o deshabilitar	MCP no funcional sin path correcto
+P2	Crear Web App en Firebase via MCP	Desbloquea hosting deploy automático
+P2	Usar Playwright para auditar frontend	Capturar errores de consola del bundle
+P2	Habilitar billing en Firebase	Desbloquea Cloud Functions, StorageAnálisis MCPs actuales y propuestas de mejora
+P3	Instalar Sentry MCP (tras integrar Sentry SDK)	Debugging proactivo en producción
+P3	Evaluar migración Render → Cloud Run + Cloud Run MCP	Solo si necesitas escalar más
+Context
+138.586 tokens
+14% used
+$0.00 spent
+▼MCP
+•codebase-memory-mcp Connected
+•firebase Connected
+•firebase-iluminariasuce Connected
+•iconify Connected
+•open-design Connected
+•playwright Connected
+•render Connected
+•tu

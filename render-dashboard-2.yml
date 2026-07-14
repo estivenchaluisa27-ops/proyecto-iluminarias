@@ -1,0 +1,35 @@
+- generic [active] [ref=e1]:
+  - generic [ref=e2]:
+    - generic [ref=e3]:
+      - banner [ref=e4]:
+        - generic [ref=e5]:
+          - link "Render" [ref=e7] [cursor=pointer]:
+            - /url: /
+          - button "S Stiven's workspace" [ref=e12] [cursor=pointer]
+        - generic [ref=e20]:
+          - navigation [ref=e21]
+          - button "Search Ctrl + K" [ref=e35] [cursor=pointer]
+        - generic [ref=e46]:
+          - button "New" [ref=e48] [cursor=pointer]
+          - button "Upgrade" [ref=e54] [cursor=pointer]
+          - button "Help" [ref=e60] [cursor=pointer]
+          - button "e" [ref=e66] [cursor=pointer]
+      - generic [ref=e69]:
+        - navigation [ref=e70]:
+          - separator [ref=e71]
+          - generic [ref=e72]
+          - generic [ref=e190]
+        - generic [ref=e221]:
+          - banner [ref=e223]
+          - main [ref=e295]
+    - generic:
+      - generic:
+        - generic: "0 services selected:"
+        - generic:
+          - generic
+      - generic:
+        - separator
+        - generic:
+          - generic
+  - iframe [ref=e680]:
+    

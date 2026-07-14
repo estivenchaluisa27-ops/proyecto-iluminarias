@@ -1,0 +1,110 @@
+- generic [active] [ref=e1]:
+  - generic [ref=e2]:
+    - generic [ref=e3]:
+      - banner [ref=e4]:
+        - generic [ref=e5]:
+          - link [ref=e7] [cursor=pointer]:
+            - /url: /
+            - img "Render" [ref=e8]
+          - button "S Stiven's workspace" [ref=e12] [cursor=pointer]:
+            - generic [ref=e13]:
+              - generic [ref=e14]: S
+              - generic "Stiven's workspace" [ref=e15]
+        - generic [ref=e20]:
+          - navigation [ref=e21]:
+            - list [ref=e22]:
+              - listitem [ref=e23]:
+                - link "iluminarias-api" [ref=e681] [cursor=pointer]:
+                  - /url: /web/srv-d98s1kfaqgkc73duqlhg
+                - button [ref=e685] [cursor=pointer]
+          - button "Search Ctrl + K" [ref=e35] [cursor=pointer]:
+            - text: Search
+            - generic [ref=e39]:
+              - generic [ref=e42]: Ctrl
+              - generic [ref=e43]: +
+              - generic [ref=e44]: K
+              - generic [ref=e45]: K
+        - generic [ref=e46]:
+          - button "New" [ref=e48] [cursor=pointer]
+          - button "Upgrade" [ref=e54] [cursor=pointer]
+          - button [ref=e60] [cursor=pointer]:
+            - img "Help" [ref=e61]
+          - button "e" [ref=e66] [cursor=pointer]
+      - generic [ref=e69]:
+        - navigation [ref=e70]:
+          - separator [ref=e71]
+          - generic [ref=e72]:
+            - generic [ref=e73]:
+              - link "Dashboard" [ref=e74] [cursor=pointer]:
+                - /url: /
+              - generic [ref=e78]: iluminarias-api
+            - generic [ref=e82]:
+              - list [ref=e83]:
+                - listitem [ref=e84]
+                - listitem [ref=e94]
+              - generic [ref=e100]:
+                - generic [ref=e101]: Monitor
+                - list "Monitor" [ref=e102]
+              - generic [ref=e116]:
+                - generic [ref=e117]: Manage
+                - list "Manage" [ref=e118]
+          - generic [ref=e190]:
+            - button "Collapse items" [expanded] [ref=e191] [cursor=pointer]
+            - list "Footer navigation" [ref=e194]:
+              - listitem [ref=e195]:
+                - link "Changelog" [ref=e196] [cursor=pointer]:
+                  - /url: https://render.com/changelog
+              - listitem [ref=e203]:
+                - link "Invite a friend" [ref=e204] [cursor=pointer]:
+                  - /url: /invites
+              - listitem [ref=e208]:
+                - button "Contact support" [ref=e209] [cursor=pointer]
+            - link "Render Status" [ref=e216] [cursor=pointer]:
+              - /url: https://status.render.com
+        - generic [ref=e221]:
+          - banner [ref=e223]:
+            - generic [ref=e224]:
+              - generic [ref=e225]: Web Service
+              - generic [ref=e229]:
+                - heading "iluminarias-api Node Free Upgrade your instance Blueprint managed" [level=1] [ref=e231]
+                - generic [ref=e251]
+            - generic [ref=e262]:
+              - generic [ref=e264]:
+                - generic [ref=e265]: "Service ID:"
+                - generic "Service ID:" [ref=e266]
+              - generic [ref=e275]:
+                - img "GitHub" [ref=e277]
+                - link "estivenchaluisa27-ops / proyecto-iluminarias main" [ref=e279] [cursor=pointer]:
+                  - /url: https://github.com/estivenchaluisa27-ops/proyecto-iluminarias/tree/main
+              - generic "Copy" [ref=e286]:
+                - link "https://iluminarias-api.onrender.com" [ref=e288] [cursor=pointer]:
+                  - /url: https://iluminarias-api.onrender.com
+                - button "Copy" [ref=e291] [cursor=pointer]
+          - main [ref=e295]:
+            - generic [ref=e688]:
+              - heading "Environment" [level=2] [ref=e689]
+              - button "Create environment group" [ref=e690] [cursor=pointer]
+            - generic [ref=e694]:
+              - generic [ref=e696]:
+                - generic [ref=e698]
+                - table [ref=e717]
+              - generic [ref=e775]:
+                - generic [ref=e778]
+                - generic [ref=e791]
+              - generic [ref=e801]:
+                - generic [ref=e804]
+                - generic [ref=e810]
+    - generic:
+      - generic:
+        - generic: "0 services selected:"
+        - generic:
+          - generic:
+            - button:
+              - generic: Move
+      - generic:
+        - separator
+        - generic:
+          - generic:
+            - button
+  - iframe [ref=e680]:
+    

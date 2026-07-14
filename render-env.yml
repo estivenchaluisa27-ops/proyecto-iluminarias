@@ -1,0 +1,53 @@
+- generic [ref=e1]:
+  - generic [ref=e2]:
+    - generic [ref=e3]:
+      - banner [ref=e4]:
+        - generic [ref=e5]:
+          - link "Render" [ref=e7] [cursor=pointer]:
+            - /url: /
+            - img "Render" [ref=e8]
+          - button "S Stiven's workspace" [ref=e12] [cursor=pointer]:
+            - generic [ref=e13]
+        - generic [ref=e20]:
+          - navigation [ref=e21]:
+            - list [ref=e22]
+          - button "Search Ctrl + K" [ref=e35] [cursor=pointer]:
+            - text: Search
+            - generic [ref=e39]
+        - generic [ref=e46]:
+          - button "New" [ref=e48] [cursor=pointer]
+          - button "Upgrade" [ref=e54] [cursor=pointer]
+          - button "Help" [ref=e60] [cursor=pointer]:
+            - img "Help" [ref=e61]
+          - button "e" [ref=e66] [cursor=pointer]
+      - generic [ref=e69]:
+        - navigation [ref=e70]:
+          - separator [ref=e71]
+          - generic [ref=e72]:
+            - generic [ref=e73]
+            - generic [ref=e82]
+          - generic [ref=e190]:
+            - button "Collapse items" [expanded] [ref=e191] [cursor=pointer]
+            - list "Footer navigation" [ref=e194]
+            - link "Render Status" [ref=e216] [cursor=pointer]:
+              - /url: https://status.render.com
+        - generic [ref=e221]:
+          - banner [ref=e223]:
+            - generic [ref=e224]
+            - generic [ref=e262]
+          - main [ref=e295]:
+            - generic [ref=e688]
+            - generic [ref=e694]
+    - generic:
+      - generic:
+        - generic: "0 services selected:"
+        - generic:
+          - generic:
+            - button
+      - generic:
+        - separator
+        - generic:
+          - generic:
+            - button
+  - iframe [ref=e680]:
+    
